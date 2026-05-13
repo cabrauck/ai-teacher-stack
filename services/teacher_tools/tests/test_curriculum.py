@@ -4,7 +4,7 @@ from teacher_tools.curriculum import load_curriculum_records, map_topic_to_curri
 
 
 def curriculum_root() -> Path:
-    return Path(__file__).resolve().parents[4] / "data" / "curriculum"
+    return Path(__file__).resolve().parents[3] / "data" / "curriculum"
 
 
 def test_load_sample_curriculum():
