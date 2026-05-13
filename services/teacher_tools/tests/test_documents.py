@@ -7,7 +7,7 @@ from teacher_tools.models import LessonRequest
 
 
 def curriculum_root() -> Path:
-    return Path(__file__).resolve().parents[4] / "data" / "curriculum"
+    return Path(__file__).resolve().parents[3] / "data" / "curriculum"
 
 
 def test_export_lesson_docx(tmp_path):
