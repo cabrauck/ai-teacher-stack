@@ -1,0 +1,42 @@
+[
+  {
+    "id": "by-gs-3-4-hsu-sample-raumorientierung",
+    "jurisdiction": "Bayern",
+    "school_type": "Grundschule",
+    "grade_band": "3/4",
+    "subject": "HSU",
+    "learning_area": "Raum und Mobilität",
+    "competency": "Die Schülerinnen und Schüler orientieren sich in ihrer näheren Umgebung mithilfe einfacher Karten, Pläne und Orientierungspunkte.",
+    "content_examples": [
+      "Schulweg",
+      "Schulgelände",
+      "einfache Kartenzeichen",
+      "Himmelsrichtungen"
+    ],
+    "source": {
+      "title": "Sample placeholder, replace with official LehrplanPLUS record",
+      "url": "https://www.lehrplanplus.bayern.de/",
+      "retrieved_at": "2026-05-13"
+    }
+  },
+  {
+    "id": "by-gs-3-4-deutsch-sample-lesen",
+    "jurisdiction": "Bayern",
+    "school_type": "Grundschule",
+    "grade_band": "3/4",
+    "subject": "Deutsch",
+    "learning_area": "Lesen - mit Texten und weiteren Medien umgehen",
+    "competency": "Die Schülerinnen und Schüler erschließen altersgemäße Texte und entnehmen ihnen gezielt Informationen.",
+    "content_examples": [
+      "Sachtexte",
+      "Lesestrategien",
+      "Fragen zum Text",
+      "Markieren wichtiger Informationen"
+    ],
+    "source": {
+      "title": "Sample placeholder, replace with official LehrplanPLUS record",
+      "url": "https://www.lehrplanplus.bayern.de/",
+      "retrieved_at": "2026-05-13"
+    }
+  }
+]
