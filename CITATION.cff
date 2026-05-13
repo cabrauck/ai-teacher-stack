@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+title: ai-teacher-stack
+message: Please cite this project as below when attribution is useful.
+authors:
+  - family-names: Brauckmann
+    given-names: Carsten
+year: 2026
+repository-code: https://github.com/cabrauck/ai-teacher-stack
