@@ -96,9 +96,17 @@ security boundaries, release-package implications, and required verification.
 
 ## Local setup
 
+Prerequisites:
+
+- Git
+- Docker Desktop or Docker Engine with Docker Compose
+- optional: Ollama for local AI models
+- optional: GitHub CLI `gh` for repository bootstrap workflows
+
 From the repository root:
 
 ```bash
+cp .env.example .env
 make check
 make test
 make lint
@@ -124,6 +132,117 @@ uv sync --extra dev
 uv run pytest
 uv run ruff check .
 uv run uvicorn teacher_tools.api:app --reload --port 8010
+```
+
+Runtime smoke checks:
+
+```bash
+curl http://localhost:8010/health
+curl http://localhost:8051/health
+curl http://localhost:8010/status
+curl "http://localhost:8010/curriculum/search?q=lesen"
+```
+
+Claude-OS creates its local `ai-teacher-stack` project and the wiki knowledge
+base hook under `vault/Wiki/` on startup. The first content sync only runs when
+the configured local Ollama embedding model is available.
+
+The current pre-release is intentionally agent-first:
+
+- Claude Code or Codex App for daily work
+- Claude-OS at `http://localhost:8051` as admin and review UI
+- `http://localhost:8010/status` as aggregated readiness endpoint
+
+Example lesson request after `docker compose up --build`:
+
+```bash
+curl -X POST http://localhost:8010/lessons \
+  -H "Content-Type: application/json" \
+  -d '{
+    "subject": "HSU",
+    "grade_band": "3/4",
+    "topic": "Orientierung mit Karten",
+    "duration_minutes": 45
+  }'
+```
+
+## Bootstrap a public repository
+
+The repository includes a bootstrap script for creating a public GitHub
+repository from the scaffold.
+
+```bash
+./scripts/bootstrap-github-public.sh cabrauck ai-teacher-stack
+```
+
+General pattern:
+
+```bash
+./scripts/bootstrap-github-public.sh <github-owner> <repo-name>
+```
+
+The script checks `git` and `gh`, initializes a Git repository when needed,
+creates the first commit, and either creates the public GitHub repository or
+connects an existing repository.
+
+Manual fallback:
+
+```bash
+git init
+git add .
+git commit -m "Initial ai-teacher-stack scaffold"
+gh repo create <github-owner>/<repo-name> --public --source=. --remote=origin --push
+```
+
+## Technical overview
+
+```text
+Claude Code / Codex / chat LLM / later UI
+        |
+        v
+teacher-tools API + Obsidian vault
+        |
+        +--> teacher-tools API
+        |       - search_curriculum
+        |       - map_topic_to_curriculum
+        |       - generate_lesson_plan
+        |       - memory source/wiki operations
+        |       - export_lesson_docx
+        |
+        +--> Claude-OS core memory service
+        |       - MCP/search/recall over vault/Wiki
+        |       - automatic wiki KB bootstrap on container startup
+        |       - local state under .claude-os
+        |
+        +--> optional qdrant profile
+        |
+        +--> optional Ollama endpoint
+        |
+        +--> exports/
+                - DOCX
+                - Markdown
+                - PDF later
+```
+
+## Repository structure
+
+```text
+.
+├── AGENTS.md
+├── CLAUDE.md
+├── docker-compose.yml
+├── .env.example
+├── .github/workflows/release.yml
+├── Makefile
+├── agent-os/
+├── data/curriculum/bayern/grundschule/klasse_3_4/sample_curriculum.json
+├── docs/
+├── integrations/claude-os/
+├── prompts/
+├── services/teacher_tools/
+├── templates/docx/
+├── vault/
+└── scripts/
 ```
 
 ## Code layout expectations

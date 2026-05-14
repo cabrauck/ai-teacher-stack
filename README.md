@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="#installation-lokale-nutzung"><img alt="Loslegen" src="https://img.shields.io/badge/Loslegen-lokale%20Nutzung-111827?style=flat-square"></a>
+  <a href="#wofur-ist-das-gedacht"><img alt="Ueberblick" src="https://img.shields.io/badge/Ueberblick-fuer%20Lehrkraefte-111827?style=flat-square"></a>
   <a href="#typische-anwendungsfalle"><img alt="Anwendungsfaelle" src="https://img.shields.io/badge/Anwendungsfaelle-Unterricht%20planen-2563EB?style=flat-square"></a>
   <a href="CONTRIBUTING.md"><img alt="Mitwirken" src="https://img.shields.io/badge/Mitwirken-Contributing-7C3AED?style=flat-square"></a>
   <a href="https://github.com/sponsors/cabrauck"><img alt="GitHub Sponsors" src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=flat-square&logo=githubsponsors&logoColor=white"></a>
@@ -43,15 +43,6 @@ Anbietern.
 > Ziel ist ein zentrales Lehrerarbeitswerkzeug, das vorhandene Materialien
 > respektiert, Unterrichtsideen weiterentwickelt und Zusammenarbeit erleichtert,
 > ohne Lehrkrafte in eine geschlossene kommerzielle Plattform zu zwingen.
-
-- Das GitHub-Repository ist der Entwicklungsarbeitsraum fur Mitwirkende und
-  Coding-Agents.
-- GitHub Releases sind nutzerorientierte Laufzeitpakete.
-- Nutzer-Releases enthalten Docker-Compose-Laufzeitdateien,
-  Claude-OS-Integrationsdateien, Beispiel-Lehrplandaten, Prompts, Vorlagen,
-  leere Vault-/Export-/State-Strukturen und Nutzerdokumentation.
-- Entwicklungsdateien wie Agent-OS, Specs, Tests, `.claude/`, `.github/`,
-  `AGENTS.md` und `CLAUDE.md` bleiben bewusst auBerhalb der Nutzer-Releases.
 
 ## Wofur ist das gedacht?
 
@@ -144,36 +135,6 @@ Ziel: 45-Minuten-Stunde mit Einstieg, Partnerarbeit, Sicherung und Lehrplanbezug
 Ausgabe: Verlaufsplan, Arbeitsblatt, Losung, Tafelbild-Idee
 ```
 
-### 1a. Systemuberblick
-
-```text
-Claude Code / Codex / Chat-LLM / spatere UI
-        |
-        v
-teacher-tools API + Obsidian-Vault
-        |
-        +--> teacher-tools API
-        |       - search_curriculum
-        |       - map_topic_to_curriculum
-        |       - generate_lesson_plan
-        |       - Operationen auf Wissensbasis/Wiki
-        |       - export_lesson_docx
-        |
-        +--> Claude-OS als lokaler Memory-Dienst
-        |       - MCP-Suche und Recall uber Vault/Wiki
-        |       - automatischer Wissensbasis-Start beim Container-Start
-        |       - lokaler Zustand unter .claude-os
-        |
-        +--> optionales qdrant-Profil
-        |
-        +--> optionaler Ollama-Endpunkt
-        |
-        +--> exports/
-                - DOCX
-                - Markdown
-                - PDF spater
-```
-
 ### 2. Material differenzieren
 
 ```text
@@ -183,27 +144,6 @@ Aus einem Arbeitsblatt entstehen:
 - Zusatzaufgaben
 - Losung
 - kurze Erklarung in einfacher Sprache
-```
-
-### 2a. Projektstruktur
-
-```text
-.
-├── AGENTS.md
-├── CLAUDE.md
-├── docker-compose.yml
-├── .env.example
-├── .github/workflows/release.yml
-├── Makefile
-├── agent-os/
-├── data/curriculum/bayern/grundschule/klasse_3_4/sample_curriculum.json
-├── docs/
-├── integrations/claude-os/
-├── prompts/
-├── services/teacher_tools/
-├── templates/docx/
-├── vault/
-└── scripts/
 ```
 
 ### 3. Digitale Tafel vorbereiten
@@ -256,103 +196,6 @@ Bitte keine sensiblen personenbezogenen Daten in den Stack legen.
 - sensible Einzelfallbeschreibungen
 - private BYCS-/OneDrive-Dateien im offentlichen Repository
 - kommerzielle Schulbuchinhalte ohne Nutzungsrecht
-
-## Installation: lokale Nutzung
-
-### Voraussetzungen
-
-- Git
-- Docker Desktop oder Docker Engine mit Docker Compose
-- optional: Ollama fur lokale KI-Modelle
-- optional: GitHub CLI `gh`, wenn du ein eigenes GitHub-Repo bootstrappen willst
-
-### Repository klonen
-
-```bash
-git clone https://github.com/cabrauck/ai-teacher-stack.git
-cd ai-teacher-stack
-```
-
-### Umgebung anlegen
-
-```bash
-./scripts/start-pre-release.sh
-```
-
-Aus einem Entwickler-Checkout:
-
-```bash
-cp .env.example .env
-make check
-make up
-```
-
-### Lokale Services prufen
-
-```bash
-curl http://localhost:8010/health
-curl http://localhost:8051/health
-curl http://localhost:8010/status
-curl "http://localhost:8010/curriculum/search?q=lesen"
-```
-
-Claude-OS erstellt beim Start sein lokales `ai-teacher-stack` Projekt und den
-Hook fur die Wissensbasis unter `vault/Wiki/`. Die erste
-Inhaltssynchronisierung lauft nur, wenn das konfigurierte lokale
-Ollama-Embedding-Modell erreichbar ist.
-
-Die aktuelle Vorabversion ist bewusst agent-first:
-
-- Claude Code oder Codex App fur die tagliche Arbeit
-- Claude-OS unter `http://localhost:8051` als Admin- und Review-Oberflache
-- `http://localhost:8010/status` als aggregierter Readiness-Endpunkt
-
-### Beispiel: Unterrichtsidee erzeugen
-
-```bash
-docker compose up --build
-```
-
-Danach:
-
-```bash
-curl -X POST http://localhost:8010/lessons \
-  -H "Content-Type: application/json" \
-  -d '{
-    "subject": "HSU",
-    "grade_band": "3/4",
-    "topic": "Orientierung mit Karten",
-    "duration_minutes": 45
-  }'
-```
-
-## Bootstrap: eigenes offentliches Repo aus dem Scaffold erstellen
-
-Das Repository enthalt ein Bootstrap-Skript fur ein eigenes offentliches
-GitHub-Repo.
-
-```bash
-./scripts/bootstrap-github-public.sh cabrauck ai-teacher-stack
-```
-
-Allgemeines Muster:
-
-```bash
-./scripts/bootstrap-github-public.sh <github-owner> <repo-name>
-```
-
-Das Skript pruft `git` und `gh`, initialisiert bei Bedarf ein Git-Repository,
-erstellt einen ersten Commit und legt das GitHub-Repository offentlich an oder
-verbindet ein bereits bestehendes Repository.
-
-Manuell geht es auch so:
-
-```bash
-git init
-git add .
-git commit -m "Initial ai-teacher-stack scaffold"
-gh repo create <github-owner>/<repo-name> --public --source=. --remote=origin --push
-```
 
 ## Ordner, die fur Lehrkrafte wichtig sind
 
