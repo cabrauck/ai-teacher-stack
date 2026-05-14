@@ -3,12 +3,27 @@
 Agent-OS stays the repo-only developer/specification gate. Claude-OS is the core
 runtime memory service. Obsidian is the visible long-term memory surface.
 
+The repository should remain contributor-ready: a contributor can clone it,
+connect a coding IDE or agent, create `.env`, run checks, and start from public
+repo context. Contributors may propose roadmap changes through issues, specs,
+or pull requests. Maintainer review owns final roadmap direction, milestone
+priority, and release timing.
+
+GitHub Project `ai-teacher-stack Roadmap` is the visible coordination board for
+open roadmap items, Agent-OS spec shaping, implementation status, and review
+flow. Open roadmap work should be represented as GitHub Issues in that project.
+Agent-OS remains the decision and specification layer for larger changes.
+
 ## Current Implementation State
 
 - Scaffold, Docker Compose, FastAPI, sample curriculum search, Markdown lesson
   output, basic DOCX export, tests, and release boundary checks are in place.
 - ByCS local export is implemented as a low-integration local packaging flow.
 - Schriftwesen and handover are implemented, tested, and privacy-gated.
+- Contributor onboarding and repo policy are maintained through
+  `CONTRIBUTING.md`, `docs/contributor-setup.md`, and Agent-OS standards.
+- Open roadmap items are imported into GitHub Project `ai-teacher-stack
+  Roadmap` as Issues.
 - LehrplanPLUS ingestion is specified as `Ready`, but not implemented.
 - DOCX document factory is still `Draft`.
 
@@ -56,3 +71,4 @@ runtime memory service. Obsidian is the visible long-term memory surface.
 - Student accounts, gradebooks, learner analytics, parent communication, behavior
   incident records, or central multi-user school platform features.
 - Commercial textbook ingestion by default.
+- Claims of certified DSGVO, BSI IT-Grundschutz, or NIS2 compliance.

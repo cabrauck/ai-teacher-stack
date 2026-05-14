@@ -22,6 +22,11 @@ The stack should stay small and practical:
 
 ## Development commands
 
+The repository is intended to be contributor-ready: clone it, create `.env`
+from `.env.example`, attach any coding IDE or agent, and run the checks below.
+Use `CONTRIBUTING.md` and `docs/contributor-setup.md` as the human contributor
+entrypoints.
+
 From repository root:
 
 ```bash
@@ -68,7 +73,9 @@ Before implementing Agent-OS-scoped work:
 
 1. Read `agent-os/product/mission.md`, `agent-os/product/roadmap.md`, and
    `agent-os/product/tech-stack.md`.
-2. Read `agent-os/standards/index.yml` and the standards relevant to the work.
+2. Read `agent-os/standards/index.yml` and the standards relevant to the work,
+   especially `contributor-workflow` and `security-compliance` for governance,
+   onboarding, privacy, and security-sensitive changes.
 3. Find the matching spec under `agent-os/specs/`.
 4. Implement only from a spec with `Status: Ready` or `Status: In Progress`.
    If the matching spec is `Draft`, finish shaping it before implementation.
@@ -92,6 +99,10 @@ Definition of Done for Agent-OS-scoped work:
   runtime files, release files, or packaging boundaries are touched.
 - Agent-OS, specs, tests, `.claude/`, `.github/`, `AGENTS.md`, and `CLAUDE.md`
   remain outside user release packages.
+- Roadmap changes may be proposed by contributors, but maintainer review decides
+  final roadmap direction, milestone priority, and release timing.
+- GitHub Project `ai-teacher-stack Roadmap` is the visible coordination board
+  for issues and PR flow. Agent-OS remains the decision and specification layer.
 
 ## Coding conventions
 
@@ -110,6 +121,9 @@ Definition of Done for Agent-OS-scoped work:
 - Treat the GitHub repository as the development workspace.
 - Treat GitHub Releases as user-only runtime packages.
 - Do not create a dev release ZIP; developers should clone the repository.
+- Keep contributor onboarding IDE-agnostic: VS Code, JetBrains IDEs, Cursor,
+  Codex, Claude Code, and terminal workflows should all work from the same
+  checkout and checks.
 - Keep Agent-OS, specs, tests, `.claude/`, `.github/`, `AGENTS.md`, and `CLAUDE.md` out of user release packages.
 - Keep user releases limited to runtime files, sample curriculum data, prompts, templates, empty vault/export skeletons, and user documentation.
 - When adding runtime files, update `scripts/build_release.py` and run `make release-check`.
@@ -120,3 +134,8 @@ Definition of Done for Agent-OS-scoped work:
 Do not add features that require or encourage committing student names, grades, diagnoses, parent communication, credentials, BYCS or OneDrive tokens, or copyrighted textbook content.
 
 For Schriftwesen, do not add fields or examples for student observations, Leistungsaufschreibungen, illness data, parent communication with clear names, or sensitive individual cases.
+
+The project is designed to support compliance-conscious workflows under German
+data protection expectations. Do not claim certified DSGVO, BSI IT-Grundschutz,
+or NIS2 compliance. Treat German data protection expectations as mandatory
+project policy and BSI/NIS2 as best-effort engineering alignment targets.

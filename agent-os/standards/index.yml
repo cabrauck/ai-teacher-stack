@@ -1,4 +1,6 @@
 root:
+  contributor-workflow:
+    description: Contributor onboarding, IDE and agent setup, PR expectations, roadmap governance, and documentation split.
   curriculum-grounding:
     description: Curriculum source, ingestion, reference, and generated-output grounding boundaries.
   document-output:
@@ -7,3 +9,5 @@ root:
     description: Data privacy limits for teacher-only workflows and public repository safety.
   python:
     description: Python service layout, testing, linting, and local-first coding rules.
+  security-compliance:
+    description: German data protection policy, BSI/NIS2 best-effort alignment, secure defaults, and release safety.

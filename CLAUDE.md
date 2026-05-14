@@ -9,6 +9,8 @@ This is a local-first AI teacher workspace. It should help a teacher prepare, ad
 ## Strong preferences
 
 - Keep the system understandable.
+- Keep contributor setup IDE-agnostic: a cloned repository plus `.env`, `uv`,
+  Docker Compose, and the documented checks should be enough to start.
 - Prefer local file workflows over a large web UI.
 - Use Obsidian-compatible Markdown for durable memory.
 - Treat Claude-OS as the core local memory runtime over `vault/Wiki/`.
@@ -50,8 +52,26 @@ packages.
 Agent-OS is the dev gate only. It is separate from the teacher frontend and from
 the Claude-OS runtime memory service.
 
+Contributors may propose roadmap changes through issues, specs, or pull
+requests. Maintainer review owns final roadmap direction, milestone priority,
+and release timing.
+
+GitHub Project `ai-teacher-stack Roadmap` is the visible coordination board for
+open roadmap issues, spec shaping, implementation status, and PR review flow.
+Agent-OS remains the decision and specification layer for larger changes.
+
+Use `CONTRIBUTING.md`, `docs/contributor-setup.md`, and the
+`contributor-workflow` Agent-OS standard for contributor onboarding. Use the
+`security-compliance` standard for privacy, security, cloud export, release
+boundary, memory indexing, and incident-sensitive changes.
+
 ## Privacy rule
 
 Do not create structures that make it natural to store identifiable student data. Use anonymized class-level notes only in examples.
 
 Remember: Im ai-teacher-stack ist Schriftwesen ein Kernmodul. Es umfasst Wochenplan, TOP/Tagesorganisationsplan, Vertretungsplan und anonymisierte Übergabeunterlagen. Claude-OS darf daraus nur nicht-personenbezogene organisatorische, didaktische und materialbezogene Informationen speichern. Schülerbeobachtungen, Namen, Noten, Diagnosen, Krankheitsdaten, Elternkommunikation und sensible Einzelfälle dürfen nicht in Claude-OS, RAG, Logs, `vault/Wiki/` oder project_memories übernommen werden.
+
+The project is designed to support compliance-conscious workflows under German
+data protection expectations. It does not claim certified DSGVO, BSI
+IT-Grundschutz, or NIS2 compliance. BSI and NIS2 are best-effort engineering
+alignment targets, not certification claims.
