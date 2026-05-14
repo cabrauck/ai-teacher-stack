@@ -1,105 +1,166 @@
 # ai-teacher-stack
 
-Local-first AI teacher workspace for curriculum-grounded lesson planning, worksheet generation, Obsidian-based material memory, and optional local inference.
+**Ein freies, lokales Arbeitstool für Lehrkräfte.**
 
-This repository is intentionally smaller than a full homelab AI platform. It is meant to run on a teacher workstation with Docker Compose and to be developed with Codex, Claude Code, or a comparable coding agent.
+`ai-teacher-stack` soll Lehrkräfte bei der täglichen Unterrichtsvorbereitung entlasten: Lehrplanbezug herstellen, Materialien überarbeiten, differenzierte Arbeitsaufträge erstellen, digitale Tafelbilder vorbereiten, Vertretungen strukturieren und bewährte Unterrichtsideen wieder auffindbar machen.
 
-## Repository and releases
+Es ist ausdrücklich **nicht** als weitere kommerzielle App, Plattform oder Abo-Lösung gedacht. Der Stack orientiert sich an offenen, nachvollziehbaren Arbeitsweisen: lokale Dateien, klare Ordnerstruktur, transparente Prompts, exportierbare Materialien und möglichst wenig Abhängigkeit von einzelnen Anbietern.
 
-- The GitHub repository is the development workspace for contributors and agents.
-- GitHub Releases are user-only runtime packages.
-- User releases contain Docker Compose runtime files, sample curriculum data, prompts, templates, empty vault/export skeletons, and user documentation.
-- Dev-only files such as Agent-OS, specs, tests, `.claude/`, `.github/`, `AGENTS.md`, and `CLAUDE.md` stay out of user releases.
+> Ziel ist ein zentrales Lehrerarbeitswerkzeug, das vorhandene Materialien respektiert, Unterrichtsideen weiterentwickelt und Zusammenarbeit erleichtert — ohne Lehrkräfte in eine geschlossene kommerzielle Plattform zu zwingen.
 
-## Goals
+## Wofür ist das gedacht?
 
-- Run locally by default.
-- Keep the Obsidian vault and generated documents on the user's machine.
-- Start with teacher-only workflows, not student-data workflows.
-- Ground lesson planning in structured curriculum data.
-- Generate reusable Markdown, DOCX, and later PDF material.
-- Support local Ollama when hardware allows it.
-- Keep BYCS Drive, OneDrive, or other school cloud systems as export targets, not as the core runtime.
+Viele Lehrkräfte arbeiten mit über Jahre gewachsenen Materialien: alte Arbeitsblätter, Word-Dateien, Tafelbilder, Proben, Notizen, Jahrgangsstufenordner, Messenger-Gruppen und Cloud-Ablagen. Das funktioniert im Alltag, wird aber schnell unübersichtlich.
 
-## Non-goals for v1
+`ai-teacher-stack` setzt genau dort an:
 
-- No student accounts.
-- No gradebook.
-- No learner analytics.
-- No automatic upload to school systems.
-- No ingestion of commercial schoolbook PDFs by default.
-- No sensitive student records in the public repo or default vault.
+- **Unterricht soll Spaß machen**: Aus einem Thema entstehen motivierende Einstiege, Aufgabenideen, Tafelimpulse und kindgerechte Materialien.
+- **Unterricht soll individuell sein**: Ein Lernziel kann in mehrere Niveaustufen, Hilfen, Zusatzaufgaben oder offene Arbeitsformen übersetzt werden.
+- **Lehrplaninhalte sollen sichtbar vermittelt werden**: Materialien werden mit Kompetenzen, Themen und Jahrgangsstufen verknüpft.
+- **Altes Material soll nicht weggeworfen werden**: Bewährte Arbeitsblätter können aktualisiert, vereinfacht, differenziert und neu formatiert werden.
+- **Digitale Tafeln brauchen passende Inhalte**: Der Stack soll helfen, aus Unterrichtsideen schnell tafelgeeignete Impulse, Abläufe und Sicherungen zu erzeugen.
+- **Routineaufgaben sollen weniger belasten**: Verlaufspläne, Lösungen, Vertretungshinweise, Materiallisten und einfache Dokumente sollen schneller entstehen.
+- **Zusammenarbeit soll leichter werden**: Lehrkräfte einer Jahrgangsstufe können Materialien strukturierter teilen, überarbeiten und wiederverwenden.
 
-## Architecture
+## Was ist der Unterschied zu einer kommerziellen Bildungs-App?
+
+`ai-teacher-stack` ist als **lokal-first Werkzeugkasten** gedacht, nicht als zentraler kommerzieller Dienst.
+
+| Kommerzielle App | ai-teacher-stack |
+|---|---|
+| geschlossenes Produkt | nachvollziehbarer Projektordner |
+| häufig Account-, Abo- oder Plattformbindung | lokale Nutzung mit Docker und Dateien |
+| Daten und Workflows liegen oft beim Anbieter | Vault, Exporte und Materialien bleiben lokal |
+| Funktionsumfang vom Anbieter vorgegeben | anpassbare Prompts, Vorlagen und Tools |
+| schwer in eigene Arbeitsweise integrierbar | orientiert an bestehenden Ordnern, DOCX, Markdown, BYCS/Drive-Export |
+
+Das Projekt ist bewusst offen lesbar und anpassbar. Gleichzeitig ist die **kommerzielle Nutzung untersagt**. Siehe [Lizenz](#lizenz-und-nutzung).
+
+## Grundprinzipien
+
+1. **Lehrkraft bleibt verantwortlich**  
+   KI macht Vorschläge, erstellt Entwürfe und hilft beim Strukturieren. Die fachliche und pädagogische Entscheidung bleibt bei der Lehrkraft.
+
+2. **Lokal vor Cloud**  
+   Materialien, Vault und Exporte sollen standardmäßig auf dem eigenen Rechner liegen. Cloud-Systeme wie BYCS Drive oder OneDrive sind Exportziele, nicht der Kern des Systems.
+
+3. **Material statt Schülerdaten**  
+   Der Stack ist in v1 ein Werkzeug für Unterrichtsmaterialien, Planung und Reflexion. Er ist kein Notenbuch, keine Schülerakte und kein Diagnosesystem.
+
+4. **Vorhandenes Material ist wertvoll**  
+   Ziel ist nicht, alles neu zu generieren. Ziel ist, vorhandene Materialien besser zu finden, zu modernisieren, zu differenzieren und lehrplankonform weiterzuentwickeln.
+
+5. **Offen, aber nicht kommerziell**  
+   Der Code soll einsehbar, lernbar und für nicht-kommerzielle Bildungszwecke anpassbar sein. Eine kommerzielle Verwertung ist nicht erlaubt.
+
+## Typische Anwendungsfälle
+
+### 1. Unterricht planen
 
 ```text
-Claude Code / Codex / terminal
-        |
-        v
-local repo + Obsidian vault
-        |
-        +--> teacher-tools API / future MCP
-        |       - search_curriculum
-        |       - map_topic_to_curriculum
-        |       - generate_lesson_plan
-        |       - create_worksheet_markdown
-        |       - export_lesson_docx
-        |
-        +--> local-rag / qdrant
-        |
-        +--> optional Ollama endpoint
-        |
-        +--> exports/
-                - DOCX
-                - Markdown
-                - PDF later
+Thema: Orientierung mit Karten, Klasse 3
+Ziel: 45-Minuten-Stunde mit Einstieg, Partnerarbeit, Sicherung und Lehrplanbezug
+Ausgabe: Verlaufsplan, Arbeitsblatt, Lösung, Tafelbild-Idee
 ```
 
-## Repository layout
+### 2. Material differenzieren
 
 ```text
-.
-├── AGENTS.md
-├── CLAUDE.md
-├── docker-compose.yml
-├── .env.example
-├── .github/workflows/release.yml
-├── Makefile
-├── agent-os/
-├── data/curriculum/bayern/grundschule/klasse_3_4/sample_curriculum.json
-├── docs/
-├── prompts/
-├── services/teacher_tools/
-├── templates/docx/
-├── vault/
-└── scripts/
+Aus einem Arbeitsblatt entstehen:
+- Basisversion
+- Version mit Hilfekarten
+- Zusatzaufgaben
+- Lösung
+- kurze Erklärung in einfacher Sprache
 ```
 
-## Quickstart
+### 3. Digitale Tafel vorbereiten
 
-From a user release ZIP:
+```text
+Aus einer Unterrichtsidee entstehen:
+- Einstieg mit Bild-/Denkimpuls
+- Ablauf für die Stunde
+- Sicherungsfolie
+- Reflexionsfrage
+```
+
+### 4. Vertretung vorbereiten
+
+```text
+Aus vorhandener Planung entstehen:
+- Thema und Lernziel
+- benötigte Materialien
+- Ablauf in 5 Schritten
+- Arbeitsauftrag für die Klasse
+- Lösung oder Erwartungshorizont
+```
+
+### 5. Jahrgangsstufenarbeit strukturieren
+
+```text
+Gemeinsame Materialien werden nicht mehr nur in Chats verteilt,
+sondern in einem geordneten Vault abgelegt, beschrieben und wiederverwendbar gemacht.
+```
+
+## Datenschutzgrenze für v1
+
+Bitte keine sensiblen personenbezogenen Daten in den Stack legen.
+
+**Geeignet:**
+
+- eigene Unterrichtsmaterialien
+- selbst erstellte Arbeitsblätter
+- allgemeine Unterrichtsnotizen ohne Namen
+- Lehrplanbezüge
+- Reflexionen ohne personenbezogene Details
+- leere oder beispielhafte Vorlagen
+
+**Nicht geeignet:**
+
+- Schülernamen
+- Notenlisten
+- Förderdiagnosen
+- Elternkommunikation mit Klarnamen
+- sensible Einzelfallbeschreibungen
+- private BYCS-/OneDrive-Dateien im öffentlichen Repository
+- kommerzielle Schulbuchinhalte ohne Nutzungsrecht
+
+## Installation: lokale Nutzung
+
+### Voraussetzungen
+
+- Git
+- Docker Desktop oder Docker Engine mit Docker Compose
+- optional: Ollama für lokale KI-Modelle
+- optional: GitHub CLI `gh`, wenn du ein eigenes GitHub-Repo bootstrappen willst
+
+### Repository klonen
+
+```bash
+git clone https://github.com/cabrauck/ai-teacher-stack.git
+cd ai-teacher-stack
+```
+
+### Umgebung anlegen
 
 ```bash
 cp .env.example .env
+```
+
+### Stack starten
+
+```bash
 docker compose up --build
 ```
 
-From a developer clone:
-
-```bash
-cp .env.example .env
-make check
-make up
-```
-
-Check API:
+### API prüfen
 
 ```bash
 curl http://localhost:8010/health
 curl "http://localhost:8010/curriculum/search?q=lesen"
 ```
 
-Generate an example lesson:
+### Beispiel: Unterrichtsidee erzeugen
 
 ```bash
 curl -X POST http://localhost:8010/lessons \
@@ -112,45 +173,56 @@ curl -X POST http://localhost:8010/lessons \
   }'
 ```
 
-## Codex workflow
+## Bootstrap: eigenes öffentliches Repo aus dem Scaffold erstellen
 
-Codex is best used here as a repository agent:
-
-```bash
-codex
-```
-
-Suggested first task:
-
-```text
-Read AGENTS.md and docs/architecture.md. Then implement the next TODO in docs/roadmap.md without adding student-data features.
-```
-
-## Create the public GitHub repository
-
-This scaffold includes a bootstrap script:
+Das Repository enthält ein Bootstrap-Skript für ein eigenes öffentliches GitHub-Repo.
 
 ```bash
 ./scripts/bootstrap-github-public.sh cabrauck ai-teacher-stack
 ```
 
-Equivalent manual commands:
+Allgemeines Muster:
+
+```bash
+./scripts/bootstrap-github-public.sh <github-owner> <repo-name>
+```
+
+Das Skript prüft `git` und `gh`, initialisiert bei Bedarf ein Git-Repository, erstellt einen ersten Commit und legt das GitHub-Repository öffentlich an oder verbindet ein bereits bestehendes Repository.
+
+Manuell geht es auch so:
 
 ```bash
 git init
 git add .
 git commit -m "Initial ai-teacher-stack scaffold"
-gh repo create cabrauck/ai-teacher-stack --public --source=. --remote=origin --push
+gh repo create <github-owner>/<repo-name> --public --source=. --remote=origin --push
 ```
 
-## Privacy boundary
+## Ordner, die für Lehrkräfte wichtig sind
 
-The default scaffold is safe for a public repository because it contains only sample curriculum-style data and empty placeholder vault folders. Do not commit real student data, private BYCS/OneDrive files, tokens, exports, or non-public teaching materials.
+```text
+vault/                 eigener Arbeits- und Materialbereich
+exports/               erzeugte Dokumente und Exportpakete
+data/curriculum/       strukturierte Lehrplan-/Beispieldaten
+prompts/               wiederverwendbare Arbeitsanweisungen
+templates/             Dokumentvorlagen, z. B. für DOCX
+```
 
-## License
+Der Entwicklungsbereich, Agenten-Workflow und technische Details sind ausgelagert: siehe [CONTRIBUTING.md](CONTRIBUTING.md).
 
-This project uses the **PolyForm Noncommercial License 1.0.0**.
+## Lizenz und Nutzung
 
-That choice is intentional: the project should be easy to inspect, adapt, and share for noncommercial educational or personal use, while commercial use is not granted. This is not an OSI-approved open-source license.
+Dieses Projekt verwendet die **PolyForm Noncommercial License 1.0.0**.
 
-Attribution is appreciated when you publish, teach with, or adapt the project. See `NOTICE.md` and `CITATION.cff`.
+Das bedeutet:
+
+- nicht-kommerzielle Nutzung, Anpassung und Weitergabe sind gewollt,
+- Einsatz im persönlichen, schulischen oder gemeinnützigen Bildungskontext ist Ziel des Projekts,
+- kommerzielle Nutzung, kommerzielle Weiterverwertung oder Einbau in kommerzielle Produkte ist nicht erlaubt,
+- die Lizenz ist bewusst nicht als OSI-Open-Source-Lizenz einzuordnen, weil kommerzielle Nutzung ausgeschlossen wird.
+
+Namensnennung ist erwünscht, wenn du das Projekt veröffentlichst, in Fortbildungen nutzt oder daraus abgeleitete Materialien teilst. Siehe `NOTICE.md` und `CITATION.cff`.
+
+## Kurz gesagt
+
+`ai-teacher-stack` soll ein freies, zentrales und lokales Arbeitstool für Lehrkräfte werden: offen nachvollziehbar, nicht-kommerziell, lehrplannah, materialorientiert und darauf ausgelegt, echten Schulalltag einfacher zu machen.
