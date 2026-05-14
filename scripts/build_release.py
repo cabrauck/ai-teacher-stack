@@ -33,6 +33,10 @@ REQUIRED_PACKAGE_PATHS = {
     "docs/architecture.md",
     "docs/privacy-boundary.md",
     "exports/.gitkeep",
+    "exports/bycs/board/.gitkeep",
+    "exports/bycs/drive/.gitkeep",
+    "exports/bycs/office/.gitkeep",
+    "exports/bycs/spaces/.gitkeep",
     "prompts/lesson-planner.md",
     "services/teacher_tools/Dockerfile",
     "services/teacher_tools/pyproject.toml",
@@ -212,8 +216,8 @@ def validate_zip(archive_path: Path) -> None:
         if relative.as_posix().startswith("data/qdrant/"):
             errors.append(f"User package must not include data/qdrant: {member}")
 
-        if relative.as_posix().startswith("exports/") and relative.as_posix() != "exports/.gitkeep":
-            errors.append(f"User package must include only exports/.gitkeep under exports/: {member}")
+        if relative.as_posix().startswith("exports/") and relative.name != ".gitkeep":
+            errors.append(f"User package must include only .gitkeep skeletons under exports/: {member}")
 
         if relative.as_posix().startswith("vault/") and relative.name != ".gitkeep":
             errors.append(f"User package must include only vault skeleton files: {member}")

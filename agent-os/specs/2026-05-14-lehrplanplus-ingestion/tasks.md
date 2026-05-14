@@ -1,29 +1,34 @@
 # Tasks: LehrplanPLUS Ingestion
 
-Status: Draft
+Status: Ready
 
 ## Purpose
 
-Track the first implementation tasks for turning the draft LehrplanPLUS ingestion spec into a small, testable feature.
+Track implementation tasks for turning the ready LehrplanPLUS ingestion spec into a small, testable feature.
 
 ## Non-goals
 
-- Do not implement ingestion as part of this Agent-OS bootstrap.
 - Do not add runtime dependencies before the feature spec is finalized.
 - Do not make basic lesson planning depend on network access.
 
 ## Acceptance Criteria
 
-- The task list starts from source confirmation and data modeling.
+- The source scope and normalized record model are fixed in `spec.md`.
 - The task list includes local fixtures and tests.
 - The task list preserves the privacy and curriculum-grounding standards.
 
-## Initial Task List
+## Planning Tasks
 
-- [ ] Confirm official source URLs and subject scope.
-- [ ] Define or extend the curriculum record model.
-- [ ] Design the ingestion command or script boundary.
+- [x] Confirm official source URLs and subject scope.
+- [x] Define the normalized curriculum record model.
+- [x] Design the ingestion command or script boundary.
+- [x] Plan local fixtures for parser and normalization tests.
+
+## Implementation Tasks
+
 - [ ] Add local fixtures for parser and normalization tests.
-- [ ] Implement ingestion and normalization in a later feature pass.
-- [ ] Update curriculum search tests in a later feature pass.
+- [ ] Implement parser and normalization as pure functions under `teacher_tools`.
+- [ ] Add a local ingestion command or script that writes structured JSON records.
+- [ ] Update curriculum search and mapping tests for ingested records.
 - [ ] Document the workflow in repository docs.
+- [ ] Run `uv run ruff check .`, `uv run pytest`, and the release boundary check.

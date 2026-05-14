@@ -23,6 +23,14 @@ This is a local-first AI teacher workspace. It should help a teacher prepare, ad
 4. Export DOCX into `exports/`.
 5. Add a reflection note after use.
 
+## Agent-OS workflow
+
+For larger development changes, read `agent-os/product/`, relevant
+`agent-os/standards/`, and the matching spec under `agent-os/specs/` before
+implementation. Implement only from specs marked `Ready` or `In Progress`.
+Agent-OS is developer-only planning context and must stay out of user release
+packages.
+
 ## Privacy rule
 
 Do not create structures that make it natural to store identifiable student data. Use anonymized class-level notes only in examples.

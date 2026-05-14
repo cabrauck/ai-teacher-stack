@@ -18,6 +18,7 @@ Agent-OS stays a developer/specification layer. It becomes productive-light star
 ## v0.3 DOCX Document Factory
 
 - Expand DOCX export into a small document factory for lesson plans, worksheets, and solution keys.
+- Add an OpenDocument Text (ODT) export path for LibreOffice-compatible open document workflows while keeping DOCX required.
 - Keep Markdown as the inspectable source or intermediate format.
 - Use deterministic filenames and teacher-review notes.
 

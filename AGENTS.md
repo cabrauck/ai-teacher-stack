@@ -28,6 +28,16 @@ make down
 make release-check
 ```
 
+If `make` is unavailable on Windows, run the same checks directly:
+
+```bash
+cd services/teacher_tools
+uv run ruff check .
+uv run pytest
+cd ../..
+python scripts/build_release.py --version dev --check
+```
+
 From `services/teacher_tools`:
 
 ```bash
@@ -36,6 +46,45 @@ uv run pytest
 uv run ruff check .
 uv run uvicorn teacher_tools.api:app --reload --port 8010
 ```
+
+## Agent-OS workflow
+
+Agent-OS is the developer specification layer for larger changes. It is not a
+runtime feature and must stay out of user release packages.
+
+Use Agent-OS for new features, cross-module changes, release-boundary changes,
+or anything that affects curriculum grounding, exports, vault structure, or
+privacy behavior. Small bug fixes may be implemented directly if they preserve
+the existing product constraints and include appropriate tests.
+
+Before implementing Agent-OS-scoped work:
+
+1. Read `agent-os/product/mission.md`, `agent-os/product/roadmap.md`, and
+   `agent-os/product/tech-stack.md`.
+2. Read `agent-os/standards/index.yml` and the standards relevant to the work.
+3. Find the matching spec under `agent-os/specs/`.
+4. Implement only from a spec with `Status: Ready` or `Status: In Progress`.
+   If the matching spec is `Draft`, finish shaping it before implementation.
+5. Update the spec/task status when implementation begins or finishes.
+
+Spec status values:
+
+- `Draft` - intent is captured, but decisions are incomplete.
+- `Ready` - the work is decision-complete and can be implemented.
+- `In Progress` - implementation has started.
+- `Done` - implementation, tests, docs, and release-boundary checks are done.
+- `Deferred` - intentionally postponed.
+
+Definition of Done for Agent-OS-scoped work:
+
+- Relevant standards are referenced or summarized in the spec.
+- Acceptance criteria are concrete enough to test.
+- Tests are named for non-trivial behavior.
+- `uv run ruff check .` and `uv run pytest` pass for Python changes.
+- `python scripts/build_release.py --version dev --check` passes when docs,
+  runtime files, release files, or packaging boundaries are touched.
+- Agent-OS, specs, tests, `.claude/`, `.github/`, `AGENTS.md`, and `CLAUDE.md`
+  remain outside user release packages.
 
 ## Coding conventions
 

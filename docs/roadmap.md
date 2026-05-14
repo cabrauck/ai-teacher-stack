@@ -20,6 +20,7 @@
 ## Milestone 2: Document factory
 
 - [ ] Improve DOCX styling.
+- [ ] Add OpenDocument Text (ODT) export path for LibreOffice-compatible open document workflows.
 - [ ] Add worksheet export.
 - [ ] Add solution-key export.
 - [ ] Add PDF export path.

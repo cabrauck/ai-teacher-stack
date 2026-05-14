@@ -1,0 +1,9 @@
+profile_name: default-local-bycs
+target_root: exports/bycs
+school_year: "2026-2027"
+school_context: "grundschule"
+default_space: "Klasse_3a"
+include_pdf: true
+include_docx: true
+include_markdown_source: false
+anonymize_filenames: true

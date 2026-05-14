@@ -8,6 +8,27 @@ Gather context and structure planning for significant work. **Run this command w
 - **Offer suggestions** — Present options the user can confirm, adjust, or correct
 - **Keep it lightweight** — This is shaping, not exhaustive documentation
 
+## Project Workflow Rules
+
+Agent-OS is a repo-only developer/specification layer. It is not a teacher-facing
+runtime feature and must stay out of user release packages.
+
+Use this status model for every spec:
+
+- `Draft` - intent is captured, but decisions are incomplete.
+- `Ready` - the work is decision-complete and can be implemented.
+- `In Progress` - implementation has started.
+- `Done` - implementation, tests, docs, and release-boundary checks are done.
+- `Deferred` - intentionally postponed.
+
+A spec can move to `Ready` only when:
+
+- Relevant standards are listed or summarized.
+- Acceptance criteria are concrete enough to test.
+- Interfaces, data shape, file locations, and boundaries are decided.
+- Non-trivial test scenarios are named.
+- Release-package impact is stated, especially whether files remain repo-only.
+
 ## Prerequisites
 
 This command **must be run in plan mode**.
@@ -190,6 +211,9 @@ agent-os/specs/{YYYY-MM-DD-HHMM-feature-slug}/
 ├── references.md     # Pointers to similar code
 └── visuals/          # Mockups, screenshots (if any)
 ```
+
+New specs should start as `Status: Draft`. Mark them `Status: Ready` only after
+the Project Workflow Rules above are satisfied.
 
 ## shape.md Content
 

@@ -14,6 +14,7 @@
 
 - `python-docx` for DOCX export
 - Markdown as the first-class authoring and inspection format
+- OpenDocument Text (ODT) export as the planned open-format path for LibreOffice-compatible workflows
 - PDF export later, after DOCX workflows are stable
 
 ## Development Tooling

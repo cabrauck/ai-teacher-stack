@@ -1,11 +1,12 @@
 # Document Output Standard
 
-This standard applies to lesson plans, worksheets, solution keys, reflection notes, Markdown files, DOCX files, and later PDF output.
+This standard applies to lesson plans, worksheets, solution keys, reflection notes, Markdown files, DOCX files, OpenDocument Text (ODT) files, and later PDF output.
 
 ## Output Order
 
 - Markdown first.
 - DOCX export required.
+- ODT export allowed as the open document path for LibreOffice-compatible workflows.
 - PDF later.
 
 ## File and Folder Conventions
@@ -24,4 +25,5 @@ All generated material must include a teacher-review note that makes clear the t
 
 - Obsidian-compatible Markdown should be readable without a custom app.
 - DOCX output should prioritize practical classroom structure over decorative formatting.
+- ODT output should preserve the same classroom structure and review notes as DOCX when implemented.
 - Generated lesson plans with curriculum references must expose those references in the output.

@@ -16,6 +16,7 @@
 - parent messages
 - health information
 - credentials or session tokens
+- Student observation notes
 
 ## Public repository rule
 

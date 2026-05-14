@@ -178,6 +178,11 @@ These standards cover:
 
 First, use AskUserQuestion to determine how to include the standards:
 
+For this repository, planning output must also preserve the Agent-OS workflow:
+specs use `Draft`, `Ready`, `In Progress`, `Done`, or `Deferred`; implementation
+starts only from `Ready` or `In Progress`; and the plan must state tests plus
+release-package impact.
+
 ```
 How should these standards be included in your plan?
 

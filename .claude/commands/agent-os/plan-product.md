@@ -8,6 +8,12 @@ Establish foundational product documentation through an interactive conversation
 - **Keep it lightweight** — gather enough to create useful docs without over-documenting
 - **One question at a time** — don't overwhelm with multiple questions
 
+## Repository Boundary
+
+Product docs under `agent-os/product/` are developer-only planning context. They
+must align with `AGENTS.md`, but they are not runtime files and must stay out of
+user release packages.
+
 ## Process
 
 ### Step 1: Check for Existing Product Docs

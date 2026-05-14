@@ -10,6 +10,10 @@ data/qdrant/
 data/rag/
 exports/*
 !exports/.gitkeep
+!exports/bycs/
+exports/bycs/**
+!exports/bycs/**/
+!exports/bycs/**/.gitkeep
 vault/**/*.docx
 vault/**/*.pdf
 vault/**/*.xlsx

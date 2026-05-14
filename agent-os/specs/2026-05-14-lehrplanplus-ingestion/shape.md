@@ -1,10 +1,10 @@
 # LehrplanPLUS Ingestion - Shaping Notes
 
-Status: Planning
+Status: Ready
 
 ## Scope
 
-Plan official curriculum ingestion for Bayern Grundschule grade band 3/4, with initial subjects Deutsch, Mathe, and HSU.
+Plan official curriculum ingestion for Bayern Grundschule grade band 3/4, starting from public LehrplanPLUS Fachlehrplaene pages and the existing sample-data subjects.
 
 ## Decisions
 
@@ -12,6 +12,8 @@ Plan official curriculum ingestion for Bayern Grundschule grade band 3/4, with i
 - Store retrieval dates for traceability.
 - Normalize data into local JSON under `data/curriculum/`.
 - Keep the workflow independent from commercial textbook content.
+- Do not ingest Servicematerialien, third-party links, media, or generated lesson text.
+- Keep tests offline by using small local fixtures.
 
 ## Out of Scope
 

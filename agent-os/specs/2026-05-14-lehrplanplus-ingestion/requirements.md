@@ -1,6 +1,6 @@
 # Requirements: LehrplanPLUS Ingestion
 
-Status: Draft
+Status: Ready
 
 ## Purpose
 
@@ -8,7 +8,6 @@ Define the initial requirements for ingesting public LehrplanPLUS curriculum ref
 
 ## Non-goals
 
-- Do not implement ingestion in this placeholder spec.
 - Do not ingest commercial textbook content.
 - Do not require network access in tests.
 - Do not mix generated lesson text into curriculum source records.
@@ -20,9 +19,20 @@ Define the initial requirements for ingesting public LehrplanPLUS curriculum ref
 - Requirements keep curriculum records separate from generated lesson content.
 - Requirements preserve the v1 privacy boundary.
 
-## Initial Task List
+## Source Requirements
 
-- [ ] Confirm official LehrplanPLUS source URLs and initial subject scope.
-- [ ] Define the structured JSON record fields.
-- [ ] Define local fixture expectations for parser tests.
-- [ ] Decide where ingestion command documentation should live.
+- Use official public LehrplanPLUS pages under `https://www.lehrplanplus.bayern.de/`.
+- Start with Bayern Grundschule grade band 3/4.
+- Do not ingest Servicematerialien, linked third-party resources, media, or commercial textbook material.
+- Store source title, source URL, and retrieval date with every record.
+
+## Data Requirements
+
+- Produce structured JSON compatible with the current `CurriculumRecord` model unless implementation tests prove an optional extension is needed.
+- Use deterministic ids derived from jurisdiction, school type, grade band, subject, and LehrplanPLUS section code.
+- Keep records under `data/curriculum/` and separate from generated lesson output.
+
+## Test Requirements
+
+- Use local fixtures only; tests must not make HTTP calls.
+- Cover parser normalization, deterministic ids, required source metadata, and existing search behavior.
