@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Project memory for Claude Code or similar coding agents.
+Project memory for Claude Code, Claude-OS, or similar coding agents.
 
 ## Project intent
 
@@ -11,9 +11,12 @@ This is a local-first AI teacher workspace. It should help a teacher prepare, ad
 - Keep the system understandable.
 - Prefer local file workflows over a large web UI.
 - Use Obsidian-compatible Markdown for durable memory.
+- Treat Claude-OS as the core local memory runtime over `vault/Wiki/`.
+- Keep Obsidian as the human-readable source of truth for teacher memory.
 - Treat DOCX export as a first-class feature.
 - Keep Cloud, BYCS, and OneDrive integrations optional and off by default.
 - Keep local Ollama optional because teacher hardware varies.
+- Treat Schriftwesen as a core module, separate from reflection.
 
 ## Default workflow
 
@@ -23,6 +26,20 @@ This is a local-first AI teacher workspace. It should help a teacher prepare, ad
 4. Export DOCX into `exports/`.
 5. Add a reflection note after use.
 
+Long-term memory workflow:
+
+1. Capture curated raw notes in `vault/Sources/`.
+2. Promote only privacy-checked synthesis into `vault/Wiki/`.
+3. Keep `vault/Wiki/index.md` and `vault/Wiki/log.md` current.
+4. Let Claude-OS index `vault/Wiki/`; do not bulk-ingest raw sources.
+
+Schriftwesen workflow:
+
+1. Create weekly plans, daily TOP plans, substitution notes, or anonymized handover notes in `vault/Schriftwesen/`.
+2. Keep templates under `vault/Templates/Schriftwesen/`.
+3. Store only organizational, didactic, curriculum, and material information.
+4. Validate privacy before export or any later memory use.
+
 ## Agent-OS workflow
 
 For larger development changes, read `agent-os/product/`, relevant
@@ -30,7 +47,11 @@ For larger development changes, read `agent-os/product/`, relevant
 implementation. Implement only from specs marked `Ready` or `In Progress`.
 Agent-OS is developer-only planning context and must stay out of user release
 packages.
+Agent-OS is the dev gate only. It is separate from the teacher frontend and from
+the Claude-OS runtime memory service.
 
 ## Privacy rule
 
 Do not create structures that make it natural to store identifiable student data. Use anonymized class-level notes only in examples.
+
+Remember: Im ai-teacher-stack ist Schriftwesen ein Kernmodul. Es umfasst Wochenplan, TOP/Tagesorganisationsplan, Vertretungsplan und anonymisierte Übergabeunterlagen. Claude-OS darf daraus nur nicht-personenbezogene organisatorische, didaktische und materialbezogene Informationen speichern. Schülerbeobachtungen, Namen, Noten, Diagnosen, Krankheitsdaten, Elternkommunikation und sensible Einzelfälle dürfen nicht in Claude-OS, RAG, Logs, `vault/Wiki/` oder project_memories übernommen werden.

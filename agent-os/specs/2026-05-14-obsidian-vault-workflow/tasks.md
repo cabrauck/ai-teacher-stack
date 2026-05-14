@@ -1,30 +1,28 @@
-# Tasks: Obsidian Vault Workflow
+# Tasks: Obsidian LTM and Claude-OS Core Runtime
 
-Status: Draft
+Status: Done
 
-## Purpose
+## Implementation
 
-Track initial implementation tasks for a later local Obsidian vault workflow feature.
+- [x] Add deterministic memory path and slug helpers.
+- [x] Add `vault/Sources/` and `vault/Wiki/` skeletons.
+- [x] Add source note, wiki page, index, log, and promotion functions.
+- [x] Add privacy validation before wiki writes and promotion.
+- [x] Add FastAPI `/memory/...` endpoints.
+- [x] Add Claude-OS Docker wrapper pinned to upstream commit.
+- [x] Add Claude-OS and Redis to default Docker Compose.
+- [x] Add automatic Claude-OS KB bootstrap for `vault/Wiki/`.
+- [x] Add `.claude-os/` local state skeleton and ignore rules.
+- [x] Update release package allowlist and boundary checks.
+- [x] Update roadmap, architecture, privacy, quickstart, and agent docs.
 
-## Non-goals
+## Verification
 
-- Do not implement vault workflow changes during this Agent-OS bootstrap.
-- Do not add Claude-OS memory behavior until the vault workflow is stable.
-- Do not add student-specific vault structures.
-
-## Acceptance Criteria
-
-- The task list starts with folder naming and Markdown metadata.
-- The task list includes tests for generated folders and files.
-- The task list keeps memory and cloud integrations in the later backlog.
-
-## Initial Task List
-
-- [ ] Confirm lesson folder naming convention.
-- [ ] Shape Markdown metadata fields.
-- [ ] Design lesson plan and reflection templates.
-- [ ] Define how curriculum record links are represented.
-- [ ] Add tests for folder and file generation in a later feature pass.
-- [ ] Implement the local vault workflow in a later feature pass.
-- [ ] Document the workflow for manual use.
-- [ ] Defer Claude-OS memory extraction to a later spec.
+- [x] Add unit tests for memory path, index, log, and privacy behavior.
+- [x] Add API tests for memory endpoints.
+- [x] Add release-boundary test coverage for Claude-OS and vault skeletons.
+- [x] Add Compose service presence test.
+- [x] Run `uv run ruff check .`.
+- [x] Run `uv run pytest`.
+- [x] Run `python scripts/build_release.py --version dev --check`.
+- [x] Run `docker compose config` when Docker is available.

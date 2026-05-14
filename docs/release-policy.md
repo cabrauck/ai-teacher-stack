@@ -13,13 +13,15 @@ The release asset is named `ai-teacher-stack-user-vX.Y.Z.zip` and contains:
   Dockerfile.
 - Sample curriculum data under `data/curriculum/`.
 - Prompts, templates, empty vault skeleton folders, and `exports/.gitkeep`.
+- Claude-OS Docker integration runtime files under `integrations/claude-os/`.
+- Empty Claude-OS runtime state skeletons under `.claude-os/`.
+- Runtime helper scripts explicitly allowlisted for user startup and checks.
 - User documentation, license, notice, and citation metadata.
 
 The user package must start with:
 
 ```bash
-cp .env.example .env
-docker compose up --build
+./scripts/start-pre-release.sh
 ```
 
 ## Repo-only development contents
@@ -36,6 +38,7 @@ release packages:
 - release/build scripts except runtime helper scripts explicitly allowlisted
 - caches, virtual environments, generated exports, local `.env`, and local
   vault documents
+- Claude-OS databases, logs, Redis state, uploads, or indexed knowledge content
 
 Developers and agents should clone the repository directly instead of using a
 separate dev release ZIP.

@@ -5,6 +5,12 @@ from pathlib import Path
 from docx import Document
 
 from teacher_tools.models import LessonPlan
+from teacher_tools.schriftwesen import (
+    SchriftwesenDocument,
+    safe_filename_part,
+    schriftwesen_filename_stem,
+    schriftwesen_to_markdown,
+)
 
 
 def lesson_to_markdown(lesson: LessonPlan) -> str:
@@ -96,5 +102,58 @@ def export_lesson_docx(lesson: LessonPlan, export_root: Path, filename: str | No
     doc.add_heading("Hinweis", level=2)
     doc.add_paragraph(lesson.teacher_review_note)
 
+    doc.save(path)
+    return path
+
+
+def _markdown_to_docx(markdown: str) -> Document:
+    doc = Document()
+    in_frontmatter = False
+    frontmatter_seen = False
+
+    for raw_line in markdown.splitlines():
+        line = raw_line.strip()
+        if line == "---":
+            in_frontmatter = not in_frontmatter
+            frontmatter_seen = True
+            continue
+        if not line:
+            continue
+        if in_frontmatter and frontmatter_seen:
+            doc.add_paragraph(line)
+            continue
+        if line.startswith("### "):
+            doc.add_heading(line.removeprefix("### "), level=3)
+        elif line.startswith("## "):
+            doc.add_heading(line.removeprefix("## "), level=2)
+        elif line.startswith("# "):
+            doc.add_heading(line.removeprefix("# "), level=1)
+        elif line.startswith("- "):
+            doc.add_paragraph(line.removeprefix("- "), style="List Bullet")
+        elif line.startswith("**") and line.endswith("**"):
+            doc.add_heading(line.strip("*"), level=3)
+        else:
+            doc.add_paragraph(line)
+
+    return doc
+
+
+def export_schriftwesen_docx(
+    document: SchriftwesenDocument,
+    export_root: Path,
+    filename: str | None = None,
+) -> Path:
+    target_root = export_root / "schriftwesen"
+    target_root.mkdir(parents=True, exist_ok=True)
+    if filename:
+        requested = Path(filename)
+        safe_name = f"{safe_filename_part(requested.stem)}{requested.suffix or '.docx'}"
+    else:
+        safe_name = f"{schriftwesen_filename_stem(document)}.docx"
+    if not safe_name.endswith(".docx"):
+        safe_name = f"{safe_filename_part(Path(safe_name).stem)}.docx"
+
+    path = target_root / safe_name
+    doc = _markdown_to_docx(schriftwesen_to_markdown(document))
     doc.save(path)
     return path

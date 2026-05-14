@@ -10,35 +10,53 @@
 - [x] Tests
 - [x] Codex instructions
 
-## Milestone 1: Curriculum grounding
+## Milestone 1: Core long-term memory
+
+- [x] Add `vault/Sources/` for curated raw memory notes.
+- [x] Add `vault/Wiki/` for privacy-checked synthesized memory.
+- [x] Add local API operations for memory source notes, wiki pages, index, and promotion.
+- [x] Add Claude-OS as a default Docker Compose runtime service.
+- [x] Add Claude-OS Redis and persistent `.claude-os/` storage skeletons.
+- [x] Add automatic Claude-OS KB bootstrap for `vault/Wiki/`.
+
+## Milestone 1.5: Enduser pre-release
+
+- [x] Add guided startup, stop, and readiness scripts for Windows and shell users.
+- [x] Add an aggregated local stack status endpoint.
+- [x] Position Claude-OS web UI as an admin and review surface.
+- [x] Add teacher-facing pre-release documentation.
+- [x] Add Claude Code and Codex App setup documentation with runtime-safe snippets.
+
+## Milestone 2: Curriculum grounding
 
 - [ ] Build official LehrplanPLUS ingestion script.
 - [ ] Normalize Bayern Grundschule 3/4 records.
 - [ ] Add source URLs and retrieval dates.
 - [ ] Add tests for curriculum search and mapping quality.
 
-## Milestone 2: Document factory
+## Milestone 3: Document factory
 
 - [ ] Improve DOCX styling.
-- [ ] Add OpenDocument Text (ODT) export path for LibreOffice-compatible open document workflows.
+- [ ] Add OpenDocument Text (ODT) export path for LibreOffice-compatible workflows.
 - [ ] Add worksheet export.
 - [ ] Add solution-key export.
 - [ ] Add PDF export path.
 
-## Milestone 3: Obsidian workflows
+## Milestone 4: Schriftwesen and handover
 
-- [ ] Create lesson folder generator.
-- [ ] Create reflection-note template.
-- [ ] Link lesson plans to curriculum records.
-- [ ] Add backlink-friendly metadata.
+- [x] Add weekly plan generation.
+- [x] Add daily TOP generation.
+- [x] Add substitution and mobile-reserve day information.
+- [x] Add anonymized class handover summaries.
+- [x] Validate all Schriftwesen documents before Markdown or DOCX export.
 
-## Milestone 4: Optional local AI
+## Milestone 5: Optional local AI
 
-- [ ] Add Ollama client.
+- [ ] Add Ollama client for teacher-tools flows.
 - [ ] Add hardware-aware model recommendations.
-- [ ] Keep offline mode functional.
+- [ ] Keep offline deterministic mode functional.
 
-## Milestone 5: Export integrations
+## Milestone 6: Export integrations
 
 - [ ] Add disabled-by-default OneDrive adapter.
 - [ ] Evaluate BYCS Drive sync options.

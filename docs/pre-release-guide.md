@@ -1,0 +1,101 @@
+# Pre-Release Guide
+
+## Goal of This Pre-Release
+
+This pre-release is meant to be **usable by a teacher on a local workstation**
+without turning the project into a large custom web app.
+
+The intended shape is:
+
+- **Claude Code** or **Codex App** for normal work
+- **Claude-OS web UI** for admin, review, and status
+- **Obsidian-compatible vault files** as the durable local workspace
+- **teacher-tools API** as the local service boundary
+
+## What Is Ready Today
+
+- Start, stop, and readiness scripts for Windows and shell-based platforms
+- Local Docker Compose runtime
+- Claude-OS runtime with local state under `.claude-os/`
+- Curriculum search
+- Lesson planning API
+- Schriftwesen and handover generation
+- DOCX export
+- Privacy-checked wiki memory workflow
+
+## What The Claude-OS Web UI Is For
+
+Use the Claude-OS surface at `http://localhost:8051` for:
+
+- checking whether Claude-OS is up
+- reviewing runtime status
+- validating that the stack is alive
+- reviewing the general Claude-OS memory environment
+- administrative and diagnostic tasks
+
+Do **not** treat it as the main teacher planning UI in this pre-release.
+
+## What The Agent Clients Are For
+
+Use Claude Code or Codex App for:
+
+- reading and editing notes in `vault/`
+- drafting lesson structures
+- shaping Markdown before export
+- reviewing generated files in `exports/`
+- navigating the local project and prompts
+
+## Teacher Workflow Model
+
+### Unterricht
+
+1. Draft or update a note in `vault/Unterricht/`
+2. Search curriculum references with the local API if needed
+3. Work with the result in Claude Code or Codex App
+4. Export classroom-ready output to `exports/`
+
+### Schriftwesen
+
+1. Work from `vault/Schriftwesen/` and the templates under
+   `vault/Templates/Schriftwesen/`
+2. Keep inputs organizational, didactic, curriculum-based, and material-based
+3. Export reviewed output locally
+
+### Long-Term Memory
+
+1. Capture raw material in `vault/Sources/`
+2. Promote only privacy-checked synthesis into `vault/Wiki/`
+3. Let Claude-OS index `vault/Wiki/`, not raw source notes
+
+## Troubleshooting
+
+If the start script fails:
+
+- run the matching `check-pre-release` script
+- verify Docker Desktop is running
+- verify ports `8010` and `8051` are free
+- open `http://localhost:8010/status`
+- open `http://localhost:8051/health`
+
+If Claude-OS is not reachable:
+
+- inspect `docker compose ps`
+- inspect the `claude-os` and `claude-os-redis` services
+- confirm that `.claude-os/` is writable
+
+If memory bootstrap looks incomplete:
+
+- confirm `vault/Sources/`, `vault/Wiki/`, `vault/Wiki/index.md`, and
+  `vault/Wiki/log.md` exist
+- run `scripts/init-vault.sh` if you need to re-create starter notes
+
+## Hard Boundaries
+
+- no student names
+- no grades
+- no diagnoses
+- no parent communication
+- no credentials in notes
+- no confidential school documents in the indexed memory space
+
+Claude-OS may index only privacy-checked content under `vault/Wiki/`.

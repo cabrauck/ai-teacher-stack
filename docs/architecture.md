@@ -7,25 +7,60 @@ This repository is a local workstation stack for teacher material planning.
 ## Main parts
 
 - Obsidian-compatible Markdown vault in `vault/`
+- Claude-OS core memory runtime in `claude-os` Docker service
+- Claude-OS Redis queue/cache service in `claude-os-redis`
 - Structured curriculum data in `data/curriculum/`
 - Local Python service in `services/teacher_tools/`
 - DOCX and Markdown exports in `exports/`
+- Schriftwesen workflow for weekly planning, daily organization, substitution, and anonymized handover
 - Optional Qdrant profile for later RAG work
 - Optional Ollama endpoint for local models
 
 ## Runtime
 
-The first runtime is Docker Compose:
+The runtime is Docker Compose. It is intended to work on macOS through Docker
+Desktop and on Windows through Docker Desktop with the WSL2 backend:
 
 ```bash
-cp .env.example .env
-docker compose up --build
+./scripts/start-pre-release.sh
 ```
 
-The local API listens on port `8010`.
+The local teacher-tools API listens on port `8010`. Claude-OS listens on port
+`8051` and stores local runtime state under `.claude-os/`.
+
+The current pre-release keeps the working surface agent-first:
+
+- Claude Code or Codex App for normal teacher work
+- Claude-OS on `http://localhost:8051` as the admin and review UI
+- `GET /status` on `teacher-tools` as the aggregated runtime readiness check
+
+## Long-term memory
+
+Obsidian is the visible source of truth for teacher memory:
+
+- `vault/Sources/`: curated raw notes
+- `vault/Wiki/`: privacy-checked long-term memory for Claude-OS indexing
+- `vault/Wiki/index.md`: navigation
+- `vault/Wiki/log.md`: audit trail
+
+Claude-OS indexes `vault/Wiki/` as the memory engine. Its Docker entrypoint
+bootstraps an `ai-teacher-stack` project, a wiki knowledge base, and a
+`project_memories` autosync hook for `/workspace/vault/Wiki`. The first sync is
+best-effort and runs only when the configured local Ollama embedding model is
+available.
+Raw sources are not bulk ingested; promotion into the wiki must pass the shared
+privacy validator.
 
 ## Design notes
 
 Keep domain logic in normal Python functions. FastAPI and future MCP wrappers should call the same functions.
 
 Do not make the vector database or local LLM mandatory for basic lesson planning and export workflows.
+
+Teacher frontends are intentionally interchangeable. Claude Code, Codex, a chat
+LLM, or a later UI can use the same local services and files.
+
+Schriftwesen is separate from reflection. It may store only organizational,
+didactic, curriculum, and material information without student names,
+observations, grades, diagnoses, parent communication, health data, or
+performance records.

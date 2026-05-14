@@ -6,9 +6,14 @@
 - FastAPI
 - Docker Compose
 - `teacher_tools` service under `services/teacher_tools/`
+- Claude-OS runtime service built from `brobertsaz/claude-os` at pinned commit
+  `ee7b62bc5bf36541018a1c14592bcac2b59022f9`
+- Redis for Claude-OS real-time learning queues
 - Local files as primary state
 - Obsidian-compatible Markdown in `vault/`
+- Claude-OS local state under `.claude-os/`
 - Markdown and DOCX output under `exports/` or lesson-specific vault folders
+- Privacy-safe Schriftwesen generation under `teacher_tools.schriftwesen`
 
 ## Document Generation
 
@@ -29,8 +34,10 @@
 - Qdrant as an optional local vector store for retrieval experiments
 - Ollama as optional local model runtime
 
-## Future Integration Shape
+## Frontend and Memory Shape
 
-- Future MCP wrapper for structured tool access to teacher workflows
+- Claude-OS MCP is the core memory service.
+- `teacher_tools` exposes frontend-agnostic local APIs for lessons, exports,
+  Schriftwesen, and memory vault operations.
+- Teacher frontends can be Claude Code, Codex, a chat LLM, or a later UI.
 - Later opt-in export adapters for BYCS or OneDrive
-- Later opt-in Claude-OS memory bridge after the vault workflow is stable

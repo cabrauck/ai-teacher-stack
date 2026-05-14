@@ -10,10 +10,15 @@ The stack should stay small and practical:
 
 - Docker Compose, not a full homelab platform.
 - Local files and Obsidian vault as the primary state.
+- Claude-OS is the core local long-term-memory runtime over privacy-checked
+  Obsidian wiki content.
+- The teacher frontend is client-agnostic: Claude Code, Codex, a chat LLM, or a
+  later UI can use the same local stack.
 - Teacher-only workflows in v1.
 - No sensitive student data in default features.
 - Curriculum grounding before generative output.
 - DOCX and Markdown exports before UI complexity.
+- Schriftwesen and handover are first-class v1 workflows, separate from reflection.
 
 ## Development commands
 
@@ -51,6 +56,8 @@ uv run uvicorn teacher_tools.api:app --reload --port 8010
 
 Agent-OS is the developer specification layer for larger changes. It is not a
 runtime feature and must stay out of user release packages.
+Agent-OS is not the teacher frontend and not the runtime memory layer; Claude-OS
+fills the runtime memory role.
 
 Use Agent-OS for new features, cross-module changes, release-boundary changes,
 or anything that affects curriculum grounding, exports, vault structure, or
@@ -92,6 +99,8 @@ Definition of Done for Agent-OS-scoped work:
 - Keep FastAPI request and response models under `teacher_tools/api.py`.
 - Keep document export isolated under `teacher_tools/documents.py`.
 - Keep curriculum loading and search isolated under `teacher_tools/curriculum.py`.
+- Keep Schriftwesen generation and handover logic isolated under `teacher_tools/schriftwesen.py`.
+- Keep privacy validation shared under `teacher_tools/privacy.py`; do not duplicate feature-specific validators.
 - Add tests for every non-trivial behavior.
 - Do not call external APIs in tests.
 - Do not require Ollama for tests.
@@ -109,3 +118,5 @@ Definition of Done for Agent-OS-scoped work:
 ## Hard boundaries
 
 Do not add features that require or encourage committing student names, grades, diagnoses, parent communication, credentials, BYCS or OneDrive tokens, or copyrighted textbook content.
+
+For Schriftwesen, do not add fields or examples for student observations, Leistungsaufschreibungen, illness data, parent communication with clear names, or sensitive individual cases.
