@@ -1,10 +1,31 @@
 # ai-teacher-stack
 
-**Ein freies, lokales Arbeitstool fur Lehrkrafte.**
+<p align="center">
+  <a href="#lizenz-und-nutzung"><img alt="Lizenz: PolyForm Noncommercial" src="https://img.shields.io/badge/License-PolyForm%20NC-555555?style=for-the-badge"></a>
+  <a href="services/teacher_tools/pyproject.toml"><img alt="Python 3.12+" src="https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white"></a>
+  <a href="docker-compose.yml"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white"></a>
+  <a href="#datenschutzgrenze-fur-v1"><img alt="Datenschutz: keine Schuelerdaten" src="https://img.shields.io/badge/Datenschutz-keine%20Schuelerdaten-0F766E?style=for-the-badge"></a>
+</p>
 
-Local-first AI teacher workspace for curriculum-grounded lesson planning,
-worksheet generation, Obsidian-based long-term memory, Claude-OS runtime memory,
-and optional local inference.
+<p align="center">
+  <a href="#installation-lokale-nutzung"><img alt="Loslegen" src="https://img.shields.io/badge/Loslegen-lokale%20Nutzung-111827?style=for-the-badge"></a>
+  <a href="#typische-anwendungsfalle"><img alt="Anwendungsfaelle" src="https://img.shields.io/badge/Anwendungsfaelle-Unterricht%20planen-2563EB?style=for-the-badge"></a>
+  <a href="CONTRIBUTING.md"><img alt="Mitwirken" src="https://img.shields.io/badge/Mitwirken-Contributing-7C3AED?style=for-the-badge"></a>
+  <a href="https://github.com/sponsors/cabrauck"><img alt="GitHub Sponsors" src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
+</p>
+
+**Nutzerinfo fur Lehrkrafte und Interessierte.**
+
+Diese `README.md` ist bewusst als **Nutzerinfo und Projektuberblick** geschrieben.
+Wenn du am Stack mitarbeiten, entwickeln oder Releases mit vorbereiten willst,
+lies bitte zuerst [CONTRIBUTING.md](CONTRIBUTING.md). Dort stehen der
+Entwicklungsablauf, alle Checks, die Release-Grenzen und die Regeln fur
+Beitrage.
+
+`ai-teacher-stack` ist ein lokal-first Arbeitsbereich fur Lehrkrafte fur
+lehrplangebundene Unterrichtsplanung, Materialuberarbeitung,
+Obsidian-basiertes Langzeitwissen, Claude-OS als lokale Memory-Laufzeit und
+optionale lokale Inferenz.
 
 `ai-teacher-stack` soll Lehrkrafte bei der taglichen Unterrichtsvorbereitung
 entlasten: Lehrplanbezug herstellen, Materialien uberarbeiten, differenzierte
@@ -21,13 +42,14 @@ Anbietern.
 > respektiert, Unterrichtsideen weiterentwickelt und Zusammenarbeit erleichtert,
 > ohne Lehrkrafte in eine geschlossene kommerzielle Plattform zu zwingen.
 
-- The GitHub repository is the development workspace for contributors and agents.
-- GitHub Releases are user-only runtime packages.
-- User releases contain Docker Compose runtime files, Claude-OS integration
-  files, sample curriculum data, prompts, templates, empty vault/export/state
-  skeletons, and user documentation.
-- Dev-only files such as Agent-OS, specs, tests, `.claude/`, `.github/`,
-  `AGENTS.md`, and `CLAUDE.md` stay out of user releases.
+- Das GitHub-Repository ist der Entwicklungsarbeitsraum fur Mitwirkende und
+  Coding-Agents.
+- GitHub Releases sind nutzerorientierte Laufzeitpakete.
+- Nutzer-Releases enthalten Docker-Compose-Laufzeitdateien,
+  Claude-OS-Integrationsdateien, Beispiel-Lehrplandaten, Prompts, Vorlagen,
+  leere Vault-/Export-/State-Strukturen und Nutzerdokumentation.
+- Entwicklungsdateien wie Agent-OS, Specs, Tests, `.claude/`, `.github/`,
+  `AGENTS.md` und `CLAUDE.md` bleiben bewusst auBerhalb der Nutzer-Releases.
 
 ## Wofur ist das gedacht?
 
@@ -36,17 +58,19 @@ Arbeitsblatter, Word-Dateien, Tafelbilder, Proben, Notizen,
 Jahrgangsstufenordner, Messenger-Gruppen und Cloud-Ablagen. Das funktioniert
 im Alltag, wird aber schnell unubersichtlich.
 
-- Run locally by default.
-- Keep the Obsidian vault and generated documents on the user's machine.
-- Run Claude-OS as the core local memory service.
-- Keep teacher frontends interchangeable: Claude Code, Codex, chat LLM, or
-  later UI.
-- Start with teacher-only workflows, not student-data workflows.
-- Ground lesson planning in structured curriculum data.
-- Generate reusable Markdown, DOCX, and later PDF material.
-- Support local Ollama when hardware allows it.
-- Keep BYCS Drive, OneDrive, or other school cloud systems as export targets,
-  not as the core runtime.
+- Lokalbetrieb ist der Standard.
+- Obsidian-Vault und erzeugte Dokumente bleiben auf dem eigenen Rechner.
+- Claude-OS ist der zentrale lokale Memory-Dienst.
+- Die Lehrkraft-Oberflache bleibt austauschbar: Claude Code, Codex, Chat-LLM
+  oder spater eine eigene UI.
+- Der Einstieg beginnt mit Lehrkraft-Ablaufen, nicht mit
+  Schulerdaten-Ablaufen.
+- Unterrichtsplanung wird an strukturierte Lehrplandaten angebunden.
+- Materialien sollen wiederverwendbar als Markdown, DOCX und spater PDF
+  entstehen.
+- Lokales Ollama wird unterstutzt, wenn die Hardware es zulasst.
+- BYCS Drive, OneDrive oder andere Schul-Clouds bleiben Exportziele, nicht die
+  eigentliche Laufzeitbasis.
 
 `ai-teacher-stack` setzt genau dort an:
 
@@ -77,7 +101,7 @@ zentraler kommerzieller Dienst.
 |---|---|
 | geschlossenes Produkt | nachvollziehbarer Projektordner |
 | haufig Account-, Abo- oder Plattformbindung | lokale Nutzung mit Docker und Dateien |
-| Daten und Workflows liegen oft beim Anbieter | Vault, Exporte und Materialien bleiben lokal |
+| Daten und Arbeitsablaufe liegen oft beim Anbieter | Vault, Exporte und Materialien bleiben lokal |
 | Funktionsumfang vom Anbieter vorgegeben | anpassbare Prompts, Vorlagen und Tools |
 | schwer in eigene Arbeitsweise integrierbar | orientiert an bestehenden Ordnern, DOCX, Markdown, BYCS/Drive-Export |
 
@@ -121,31 +145,31 @@ Ausgabe: Verlaufsplan, Arbeitsblatt, Losung, Tafelbild-Idee
 ### 1a. Systemuberblick
 
 ```text
-Claude Code / Codex / chat LLM / later UI
+Claude Code / Codex / Chat-LLM / spatere UI
         |
         v
-teacher-tools API + Obsidian vault
+teacher-tools API + Obsidian-Vault
         |
         +--> teacher-tools API
         |       - search_curriculum
         |       - map_topic_to_curriculum
         |       - generate_lesson_plan
-        |       - memory source/wiki operations
+        |       - Operationen auf Wissensbasis/Wiki
         |       - export_lesson_docx
         |
-        +--> Claude-OS core memory service
-        |       - MCP/search/recall over vault/Wiki
-        |       - automatic wiki KB bootstrap on container startup
-        |       - local state under .claude-os
+        +--> Claude-OS als lokaler Memory-Dienst
+        |       - MCP-Suche und Recall uber Vault/Wiki
+        |       - automatischer Wissensbasis-Start beim Container-Start
+        |       - lokaler Zustand unter .claude-os
         |
-        +--> optional qdrant profile
+        +--> optionales qdrant-Profil
         |
-        +--> optional Ollama endpoint
+        +--> optionaler Ollama-Endpunkt
         |
         +--> exports/
                 - DOCX
                 - Markdown
-                - PDF later
+                - PDF spater
 ```
 
 ### 2. Material differenzieren
@@ -275,7 +299,7 @@ Hook fur die Wissensbasis unter `vault/Wiki/`. Die erste
 Inhaltssynchronisierung lauft nur, wenn das konfigurierte lokale
 Ollama-Embedding-Modell erreichbar ist.
 
-Die aktuelle Pre-Release ist bewusst agent-first:
+Die aktuelle Vorabversion ist bewusst agent-first:
 
 - Claude Code oder Codex App fur die tagliche Arbeit
 - Claude-OS unter `http://localhost:8051` als Admin- und Review-Oberflache
@@ -338,13 +362,26 @@ prompts/               wiederverwendbare Arbeitsanweisungen
 templates/             Dokumentvorlagen, z. B. fur DOCX
 ```
 
-The default scaffold is safe for a public repository because it contains only
-sample curriculum-style data and empty placeholder vault folders. Do not commit
-real student data, private BYCS/OneDrive files, tokens, exports, Claude-OS
-databases/logs/uploads, or non-public teaching materials.
+Das Standard-Scaffold ist fur ein offentliches Repository geeignet, weil es nur
+beispielhafte curriculare Daten und leere Platzhalter im Vault enthalt.
+Echte Schulerdaten, private BYCS-/OneDrive-Dateien, Tokens, Exporte,
+Claude-OS-Datenbanken, Logs, Uploads oder nicht-offentliche Unterrichtsmaterialien
+sollten nicht eingecheckt werden.
 
-Der Entwicklungsbereich, Agenten-Workflow und technische Details sind
-ausgelagert: siehe [CONTRIBUTING.md](CONTRIBUTING.md).
+## Unterstutzung
+
+Wenn dir das Projekt hilft und du seine Weiterentwicklung fordern willst,
+freue ich mich uber freiwillige finanzielle Unterstutzung. `ai-teacher-stack`
+ist ein Freizeitprojekt, das in der freien Zeit entsteht und gepflegt wird.
+
+Finanzielle Unterstutzung ist uber GitHub Sponsors vorgesehen:
+[Sponsor werden](https://github.com/sponsors/cabrauck)
+
+## Mitwirken
+
+Die `README` bleibt bewusst nutzerorientiert. Entwicklungsablauf,
+Agenten-Regeln, Checklisten und Release-Grenzen stehen in
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Lizenz und Nutzung
 
