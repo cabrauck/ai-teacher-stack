@@ -1,12 +1,17 @@
-.PHONY: check test lint up down build init-vault tree
+.PHONY: check test lint release-check up down build init-vault tree
 
-check: lint test
+PYTHON ?= python
+
+check: lint test release-check
 
 lint:
 	cd services/teacher_tools && uv run ruff check .
 
 test:
 	cd services/teacher_tools && uv run pytest
+
+release-check:
+	$(PYTHON) scripts/build_release.py --version dev --check
 
 up:
 	docker compose up --build

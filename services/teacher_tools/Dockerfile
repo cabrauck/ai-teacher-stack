@@ -8,10 +8,10 @@ WORKDIR /app/service
 RUN pip install --no-cache-dir uv
 
 COPY pyproject.toml ./
+COPY uv.lock ./
 COPY src ./src
-COPY tests ./tests
 
-RUN uv sync --extra dev
+RUN uv sync --frozen --no-dev
 
 EXPOSE 8010
 

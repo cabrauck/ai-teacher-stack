@@ -4,6 +4,13 @@ Local-first AI teacher workspace for curriculum-grounded lesson planning, worksh
 
 This repository is intentionally smaller than a full homelab AI platform. It is meant to run on a teacher workstation with Docker Compose and to be developed with Codex, Claude Code, or a comparable coding agent.
 
+## Repository and releases
+
+- The GitHub repository is the development workspace for contributors and agents.
+- GitHub Releases are user-only runtime packages.
+- User releases contain Docker Compose runtime files, sample curriculum data, prompts, templates, empty vault/export skeletons, and user documentation.
+- Dev-only files such as Agent-OS, specs, tests, `.claude/`, `.github/`, `AGENTS.md`, and `CLAUDE.md` stay out of user releases.
+
 ## Goals
 
 - Run locally by default.
@@ -56,7 +63,9 @@ local repo + Obsidian vault
 ├── CLAUDE.md
 ├── docker-compose.yml
 ├── .env.example
+├── .github/workflows/release.yml
 ├── Makefile
+├── agent-os/
 ├── data/curriculum/bayern/grundschule/klasse_3_4/sample_curriculum.json
 ├── docs/
 ├── prompts/
@@ -67,6 +76,15 @@ local repo + Obsidian vault
 ```
 
 ## Quickstart
+
+From a user release ZIP:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+From a developer clone:
 
 ```bash
 cp .env.example .env

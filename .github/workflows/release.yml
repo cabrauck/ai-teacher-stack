@@ -1,0 +1,39 @@
+name: User release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build user package
+        run: python scripts/build_release.py --version "${GITHUB_REF_NAME}" --output-dir dist --check
+
+      - name: Upload GitHub Release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          asset="dist/ai-teacher-stack-user-${TAG}.zip"
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" "${asset}" --clobber
+          else
+            gh release create "${TAG}" "${asset}" \
+              --title "ai-teacher-stack ${TAG}" \
+              --notes "User runtime package for ai-teacher-stack. Developers should clone the repository directly."
+          fi

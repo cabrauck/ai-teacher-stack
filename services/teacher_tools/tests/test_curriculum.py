@@ -1,6 +1,10 @@
 from pathlib import Path
 
-from teacher_tools.curriculum import load_curriculum_records, map_topic_to_curriculum, search_curriculum
+from teacher_tools.curriculum import (
+    load_curriculum_records,
+    map_topic_to_curriculum,
+    search_curriculum,
+)
 
 
 def curriculum_root() -> Path:

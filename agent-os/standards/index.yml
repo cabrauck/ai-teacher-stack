@@ -1,0 +1,7 @@
+root:
+  document-output:
+    description: Markdown, DOCX, export-location, filename, and later PDF boundaries.
+  privacy-boundary:
+    description: Data privacy limits for teacher-only workflows and public repository safety.
+  python:
+    description: Python service layout, testing, linting, and local-first coding rules.

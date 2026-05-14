@@ -25,6 +25,7 @@ make test
 make lint
 make up
 make down
+make release-check
 ```
 
 From `services/teacher_tools`:
@@ -45,6 +46,16 @@ uv run uvicorn teacher_tools.api:app --reload --port 8010
 - Add tests for every non-trivial behavior.
 - Do not call external APIs in tests.
 - Do not require Ollama for tests.
+
+## Release and workspace policy
+
+- Treat the GitHub repository as the development workspace.
+- Treat GitHub Releases as user-only runtime packages.
+- Do not create a dev release ZIP; developers should clone the repository.
+- Keep Agent-OS, specs, tests, `.claude/`, `.github/`, `AGENTS.md`, and `CLAUDE.md` out of user release packages.
+- Keep user releases limited to runtime files, sample curriculum data, prompts, templates, empty vault/export skeletons, and user documentation.
+- When adding runtime files, update `scripts/build_release.py` and run `make release-check`.
+- When adding dev tooling or specs, keep them repo-only and outside the release allowlist.
 
 ## Hard boundaries
 
