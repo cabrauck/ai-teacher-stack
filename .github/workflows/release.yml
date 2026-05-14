@@ -30,10 +30,36 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           asset="dist/ai-teacher-stack-user-${TAG}.zip"
+          prerelease_flag=()
+          case "${TAG}" in
+            *-pre.*|*-alpha.*|*-beta.*|*-rc.*)
+              prerelease_flag=(--prerelease)
+              ;;
+          esac
+
+          cat > release-notes.md <<'EOF'
+          User runtime package for ai-teacher-stack.
+
+          Start from the extracted package with:
+
+          - Windows PowerShell: `.\scripts\start-pre-release.ps1`
+          - macOS / Linux shell: `./scripts/start-pre-release.sh`
+
+          Keep student names, grades, diagnoses, parent communication, credentials, private school documents, and copyrighted textbook content out of the package and public repository.
+
+          Developers should clone the repository directly instead of using this runtime package.
+          EOF
+
           if gh release view "${TAG}" >/dev/null 2>&1; then
+            if [ "${#prerelease_flag[@]}" -gt 0 ]; then
+              gh release edit "${TAG}" "${prerelease_flag[@]}" --notes-file release-notes.md
+            else
+              gh release edit "${TAG}" --notes-file release-notes.md
+            fi
             gh release upload "${TAG}" "${asset}" --clobber
           else
             gh release create "${TAG}" "${asset}" \
+              "${prerelease_flag[@]}" \
               --title "ai-teacher-stack ${TAG}" \
-              --notes "User runtime package for ai-teacher-stack. Developers should clone the repository directly."
+              --notes-file release-notes.md
           fi

@@ -34,6 +34,8 @@ release packages:
 - `.github/`
 - `AGENTS.md`
 - `CLAUDE.md`
+- `CONTRIBUTING.md`
+- `docs/contributor-setup.md`
 - tests and specs
 - release/build scripts except runtime helper scripts explicitly allowlisted
 - caches, virtual environments, generated exports, local `.env`, and local
@@ -54,3 +56,21 @@ Run the boundary check before release:
 ```bash
 make release-check
 ```
+
+## GitHub release automation
+
+Publishing a tag that starts with `v` triggers `.github/workflows/release.yml`.
+The workflow builds `ai-teacher-stack-user-vX.Y.Z.zip`, validates the release
+boundary, and uploads the ZIP to the matching GitHub Release.
+
+Use pre-release tags for teacher-testable builds until the runtime package has
+been install-tested end to end:
+
+```bash
+git tag v0.1.0-pre.1
+git push origin v0.1.0-pre.1
+```
+
+Tags containing `-pre.`, `-alpha.`, `-beta.`, or `-rc.` are marked as GitHub
+pre-releases. Do not publish GitHub Packages for v1; the ZIP asset is the
+supported user distribution format.
