@@ -1,17 +1,19 @@
 # ai-teacher-stack
 
 <p align="center">
-  <a href="#lizenz-und-nutzung"><img alt="Lizenz: PolyForm Noncommercial" src="https://img.shields.io/badge/License-PolyForm%20NC-555555?style=for-the-badge"></a>
-  <a href="services/teacher_tools/pyproject.toml"><img alt="Python 3.12+" src="https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white"></a>
-  <a href="docker-compose.yml"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white"></a>
-  <a href="#datenschutzgrenze-fur-v1"><img alt="Datenschutz: keine Schuelerdaten" src="https://img.shields.io/badge/Datenschutz-keine%20Schuelerdaten-0F766E?style=for-the-badge"></a>
+  <a href="#lizenz-und-nutzung"><img alt="License: PolyForm Noncommercial" src="https://img.shields.io/badge/License-PolyForm%20NC-555555?style=flat-square"></a>
+  <a href="services/teacher_tools/pyproject.toml"><img alt="Python 3.12+" src="https://img.shields.io/badge/Python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white"></a>
+  <a href="docker-compose.yml"><img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white"></a>
+  <a href="#typische-anwendungsfalle"><img alt="Claude-OS Memory" src="https://img.shields.io/badge/Claude--OS-Memory-111827?style=flat-square"></a>
+  <a href="#ordner-die-fur-lehrkrafte-wichtig-sind"><img alt="Obsidian Vault" src="https://img.shields.io/badge/Obsidian-Vault-7C3AED?style=flat-square&logo=obsidian&logoColor=white"></a>
+  <a href="#datenschutzgrenze-fur-v1"><img alt="Datenschutz: keine Schuelerdaten" src="https://img.shields.io/badge/Datenschutz-keine%20Schuelerdaten-0F766E?style=flat-square"></a>
 </p>
 
 <p align="center">
-  <a href="#installation-lokale-nutzung"><img alt="Loslegen" src="https://img.shields.io/badge/Loslegen-lokale%20Nutzung-111827?style=for-the-badge"></a>
-  <a href="#typische-anwendungsfalle"><img alt="Anwendungsfaelle" src="https://img.shields.io/badge/Anwendungsfaelle-Unterricht%20planen-2563EB?style=for-the-badge"></a>
-  <a href="CONTRIBUTING.md"><img alt="Mitwirken" src="https://img.shields.io/badge/Mitwirken-Contributing-7C3AED?style=for-the-badge"></a>
-  <a href="https://github.com/sponsors/cabrauck"><img alt="GitHub Sponsors" src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=for-the-badge&logo=githubsponsors&logoColor=white"></a>
+  <a href="#installation-lokale-nutzung"><img alt="Loslegen" src="https://img.shields.io/badge/Loslegen-lokale%20Nutzung-111827?style=flat-square"></a>
+  <a href="#typische-anwendungsfalle"><img alt="Anwendungsfaelle" src="https://img.shields.io/badge/Anwendungsfaelle-Unterricht%20planen-2563EB?style=flat-square"></a>
+  <a href="CONTRIBUTING.md"><img alt="Mitwirken" src="https://img.shields.io/badge/Mitwirken-Contributing-7C3AED?style=flat-square"></a>
+  <a href="https://github.com/sponsors/cabrauck"><img alt="GitHub Sponsors" src="https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-EA4AAA?style=flat-square&logo=githubsponsors&logoColor=white"></a>
 </p>
 
 **Nutzerinfo fur Lehrkrafte und Interessierte.**
