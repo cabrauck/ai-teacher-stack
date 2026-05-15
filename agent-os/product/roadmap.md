@@ -25,6 +25,7 @@ Agent-OS remains the decision and specification layer for larger changes.
 - Open roadmap items are imported into GitHub Project `ai-teacher-stack
   Roadmap` as Issues.
 - LehrplanPLUS ingestion is specified as `Ready`, but not implemented.
+- Materiallizenzen and rights metadata are specified as `Draft`.
 - DOCX document factory is still `Draft`.
 
 ## v0.2 Obsidian LTM and Claude-OS Core Runtime
@@ -46,15 +47,30 @@ Agent-OS remains the decision and specification layer for larger changes.
 - Keep ingestion data separate from generated lesson content.
 - Use the existing `lehrplanplus-ingestion` Agent-OS spec as the implementation gate.
 
-## v0.4 DOCX Document Factory
+## v0.4 Materiallizenzen and Rights Metadata
+
+- Define metadata-first license handling for teacher-created material, OER,
+  public curriculum references, publisher material, and unknown sources.
+- Use `CC-BY-SA-4.0` as the planned default license option when teachers choose
+  to share or publish self-created material.
+- Keep publisher material as referenced metadata only unless explicit usage
+  rights are documented by the teacher.
+- Prepare contributor research work for German school copying rules, publisher
+  license categories, and OER attribution models.
+- Use the `material-lizenzen` Agent-OS spec as the shaping gate before runtime
+  implementation.
+
+## v0.5 DOCX Document Factory
 
 - Expand DOCX export into a small document factory for lesson plans, worksheets,
   and solution keys.
 - Add an OpenDocument Text (ODT) export path for LibreOffice-compatible workflows.
 - Keep Markdown as the inspectable source or intermediate format.
 - Use deterministic filenames and teacher-review notes.
+- Render visible license metadata in Markdown and DOCX once the licensing model
+  is implemented.
 
-## v0.5 Optional Local AI/Ollama Support
+## v0.6 Optional Local AI/Ollama Support
 
 - Add optional local AI workflows through Ollama after deterministic flows remain stable.
 - Do not require Ollama for tests, bootstrap, or basic lesson export.
@@ -71,4 +87,5 @@ Agent-OS remains the decision and specification layer for larger changes.
 - Student accounts, gradebooks, learner analytics, parent communication, behavior
   incident records, or central multi-user school platform features.
 - Commercial textbook ingestion by default.
+- Automated legal clearance for publisher materials or license terms.
 - Claims of certified DSGVO, BSI IT-Grundschutz, or NIS2 compliance.

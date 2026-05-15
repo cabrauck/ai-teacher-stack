@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contributor setup
+    url: https://github.com/cabrauck/ai-teacher-stack/blob/main/CONTRIBUTING.md
+    about: Read the contributor workflow before starting implementation work.
+  - name: Privacy boundary
+    url: https://github.com/cabrauck/ai-teacher-stack/blob/main/docs/privacy-boundary.md
+    about: Review the project's privacy and data-minimization boundaries.

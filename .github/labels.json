@@ -1,0 +1,92 @@
+[
+  {
+    "name": "bug",
+    "color": "d73a4a",
+    "description": "Something isn't working"
+  },
+  {
+    "name": "documentation",
+    "color": "0075ca",
+    "description": "Improvements or additions to documentation"
+  },
+  {
+    "name": "duplicate",
+    "color": "cfd3d7",
+    "description": "This issue or pull request already exists"
+  },
+  {
+    "name": "enhancement",
+    "color": "a2eeef",
+    "description": "New feature or request"
+  },
+  {
+    "name": "good first issue",
+    "color": "7057ff",
+    "description": "Good for newcomers"
+  },
+  {
+    "name": "help wanted",
+    "color": "008672",
+    "description": "Extra attention is needed"
+  },
+  {
+    "name": "invalid",
+    "color": "e4e669",
+    "description": "This doesn't seem right"
+  },
+  {
+    "name": "question",
+    "color": "d876e3",
+    "description": "Further information is requested"
+  },
+  {
+    "name": "wontfix",
+    "color": "ffffff",
+    "description": "This will not be worked on"
+  },
+  {
+    "name": "agent-os",
+    "color": "5319e7",
+    "description": "Agent-OS spec or workflow related"
+  },
+  {
+    "name": "privacy",
+    "color": "b60205",
+    "description": "Privacy boundary or data protection impact"
+  },
+  {
+    "name": "security",
+    "color": "ee0701",
+    "description": "Security or compliance posture"
+  },
+  {
+    "name": "teacher-workflow",
+    "color": "0e8a16",
+    "description": "Teacher-facing workflow impact"
+  },
+  {
+    "name": "curriculum",
+    "color": "1d76db",
+    "description": "Curriculum data, ingestion, grounding, or search"
+  },
+  {
+    "name": "export",
+    "color": "c2e0c6",
+    "description": "Document, Markdown, DOCX, ODT, PDF, or cloud export"
+  },
+  {
+    "name": "release-boundary",
+    "color": "fbca04",
+    "description": "User release package boundary or packaging rule"
+  },
+  {
+    "name": "schriftwesen",
+    "color": "fef2c0",
+    "description": "Schriftwesen, handover, substitution, or organization plans"
+  },
+  {
+    "name": "docs",
+    "color": "0075ca",
+    "description": "Documentation and contributor guide work"
+  }
+]

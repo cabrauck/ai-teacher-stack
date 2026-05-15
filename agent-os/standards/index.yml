@@ -5,6 +5,8 @@ root:
     description: Curriculum source, ingestion, reference, and generated-output grounding boundaries.
   document-output:
     description: Markdown, DOCX, export-location, filename, and later PDF boundaries.
+  material-licensing:
+    description: Material source categories, license metadata, publisher-material boundaries, OER defaults, and contributor research rules.
   privacy-boundary:
     description: Data privacy limits for teacher-only workflows and public repository safety.
   python:

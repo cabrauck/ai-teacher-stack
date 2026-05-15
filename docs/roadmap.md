@@ -34,12 +34,22 @@
 - [ ] Add source URLs and retrieval dates.
 - [ ] Add tests for curriculum search and mapping quality.
 
+## Milestone 2.5: Material licenses and rights metadata
+
+- [ ] Shape the `material-lizenzen` Agent-OS spec.
+- [ ] Define metadata categories for teacher-created material, OER, publisher material, public curriculum, and unknown sources.
+- [ ] Use `CC-BY-SA-4.0` as the planned default when teachers choose to share or publish self-created material.
+- [ ] Research German school copying and digital teaching material boundaries with official sources.
+- [ ] Research publisher license categories without copying publisher terms or materials into the repository.
+- [ ] Plan visible license metadata for Markdown, DOCX, vault notes, and export manifests.
+
 ## Milestone 3: Document factory
 
 - [ ] Improve DOCX styling.
 - [ ] Add OpenDocument Text (ODT) export path for LibreOffice-compatible workflows.
 - [ ] Add worksheet export.
 - [ ] Add solution-key export.
+- [ ] Add visible license metadata once the Materiallizenzen model is implemented.
 - [ ] Add PDF export path.
 
 ## Milestone 4: Schriftwesen and handover

@@ -1,0 +1,57 @@
+name: Documentation or contributor workflow
+description: Request a docs, setup, README, or contributor workflow improvement.
+title: "[Docs]: "
+labels:
+  - docs
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for documentation and contributor workflow gaps. Do not paste private local setup secrets, tokens, school-internal documents, or private vault/export content.
+  - type: dropdown
+    id: doc_area
+    attributes:
+      label: Documentation area
+      options:
+        - README or user-facing docs
+        - CONTRIBUTING or contributor setup
+        - Agent instructions or Agent-OS standards
+        - Release policy or packaging docs
+        - Privacy boundary docs
+        - API or developer reference
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is unclear or missing?
+      description: Describe the gap from a contributor or user perspective.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_change
+    attributes:
+      label: Proposed documentation change
+      description: Describe the change that would resolve the gap.
+    validations:
+      required: true
+  - type: textarea
+    id: affected_files
+    attributes:
+      label: Affected files or pages
+      description: List known files or pages, if any.
+      placeholder: |
+        CONTRIBUTING.md
+        docs/contributor-setup.md
+    validations:
+      required: false
+  - type: checkboxes
+    id: scope_check
+    attributes:
+      label: Scope check
+      options:
+        - label: This request keeps user-facing docs, contributor workflow, and Agent-OS material separated.
+          required: true
+        - label: This request does not include private local material, secrets, or sensitive classroom data.
+          required: true
