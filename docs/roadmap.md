@@ -23,12 +23,30 @@
 
 - [x] Add guided startup, stop, and readiness scripts for Windows and shell users.
 - [x] Add an aggregated local stack status endpoint.
-- [x] Position Claude-OS web UI as an admin and review surface.
+- [x] Add Claude-OS API/MCP runtime as the local memory service.
 - [x] Add teacher-facing pre-release documentation.
 - [x] Add LibreChat as the v1 teacher frontend.
 - [x] Connect LibreChat to Claude-OS and teacher-tools through MCP.
 - [x] Keep duplicate LibreChat RAG/vector/search services out of the default
   stack when Claude-OS provides the memory/knowledge path.
+
+## Milestone 1.6: Claude-OS full runtime integration
+
+- [ ] Expose the upstream Claude-OS UI as a documented local service.
+- [ ] Keep the Claude-OS API/MCP endpoint separate from the Claude-OS UI URL.
+- [ ] Report Claude-OS project, knowledge base, folder hook, document count,
+  embedding coverage, jobs, Redis, Ollama, and frontend status in stack status.
+- [ ] Prove that privacy-checked `vault/Wiki` pages sync into the Claude-OS
+  wiki knowledge base and can be searched through Claude-OS MCP/API.
+- [ ] Add explicit controls and documentation for vector search, hybrid search,
+  reranking, and agentic RAG.
+- [ ] Make memories, wiki pages, exported documents, Claude-OS KB status, and
+  search results visible from LibreChat through teacher-facing tools or
+  artifacts.
+- [ ] Add Karpathy-style Obsidian wiki workflow docs: source ingest, wiki
+  synthesis, query-to-wiki filing, index/log maintenance, and lint checks.
+- [ ] Keep `vault/Sources/`, exports, credentials, and confidential school
+  material out of default indexing.
 
 ## Milestone 2: Curriculum grounding
 

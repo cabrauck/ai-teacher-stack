@@ -61,6 +61,10 @@ get_env_port() {
     printf 'Configured value for %s must be an integer port. Current value: %s\n' "${key}" "${value}" >&2
     exit 1
   fi
+  if (( value < 1 || value > 65535 )); then
+    printf 'Configured value for %s must be a TCP port between 1 and 65535. Current value: %s\n' "${key}" "${value}" >&2
+    exit 1
+  fi
   printf '%s\n' "${value}"
 }
 
@@ -85,6 +89,28 @@ is_port_busy() {
     netstat -an 2>/dev/null | grep -E "[\.:]${port}[[:space:]].*LISTEN" >/dev/null 2>&1
     return $?
   fi
+  return 1
+}
+
+get_compose_published_port() {
+  local service="$1"
+  local container_port="$2"
+  local mapping
+  mapping="$(docker compose port "${service}" "${container_port}" 2>/dev/null || true)"
+  if [[ -z "${mapping}" ]]; then
+    return 1
+  fi
+
+  while IFS= read -r line; do
+    if [[ "${line}" =~ ^invalid[[:space:]] ]]; then
+      continue
+    fi
+    if [[ "${line}" =~ :([0-9]+)[[:space:]]*$ ]]; then
+      printf '%s\n' "${BASH_REMATCH[1]}"
+      return 0
+    fi
+  done <<< "${mapping}"
+
   return 1
 }
 
@@ -169,6 +195,62 @@ sync_env_example() {
   fi
 }
 
+resolve_host_ports() {
+  public_host="$(get_env_value "STACK_PUBLIC_HOST" "localhost")"
+  local running_services
+  running_services="$(docker compose ps --status running --services 2>/dev/null || true)"
+
+  local librechat_requested_port librechat_published_port
+  librechat_requested_port="$(get_env_port "HOST_LIBRECHAT_PORT" "3080")"
+  if printf '%s\n' "${running_services}" | grep -qx 'librechat' \
+    && librechat_published_port="$(get_compose_published_port "librechat" "3080")"; then
+    librechat_port="${librechat_published_port}"
+    if [[ "${librechat_port}" != "${librechat_requested_port}" ]]; then
+      log "LibreChat is already running on host port ${librechat_port}; updating .env to match."
+    fi
+  else
+    librechat_port="$(select_free_port "${librechat_requested_port}")"
+    if [[ "${librechat_port}" != "${librechat_requested_port}" ]]; then
+      log "LibreChat host port ${librechat_requested_port} is already in use; using ${librechat_port} instead."
+    fi
+  fi
+  set_env_value "HOST_LIBRECHAT_PORT" "${librechat_port}"
+
+  local teacher_tools_requested_port teacher_tools_published_port
+  teacher_tools_requested_port="$(get_env_port "HOST_TEACHER_TOOLS_PORT" "8010")"
+  if printf '%s\n' "${running_services}" | grep -qx 'teacher-tools' \
+    && teacher_tools_published_port="$(get_compose_published_port "teacher-tools" "8010")"; then
+    teacher_tools_port="${teacher_tools_published_port}"
+    if [[ "${teacher_tools_port}" != "${teacher_tools_requested_port}" ]]; then
+      log "teacher-tools is already running on host port ${teacher_tools_port}; updating .env to match."
+    fi
+  else
+    teacher_tools_port="$(select_free_port "${teacher_tools_requested_port}" "${librechat_port}")"
+    if [[ "${teacher_tools_port}" != "${teacher_tools_requested_port}" ]]; then
+      log "teacher-tools host port ${teacher_tools_requested_port} is already in use; using ${teacher_tools_port} instead."
+    fi
+  fi
+  set_env_value "HOST_TEACHER_TOOLS_PORT" "${teacher_tools_port}"
+
+  local claude_os_requested_port claude_os_published_port
+  claude_os_requested_port="$(get_env_port "HOST_CLAUDE_OS_PORT" "8051")"
+  if printf '%s\n' "${running_services}" | grep -qx 'claude-os' \
+    && claude_os_published_port="$(get_compose_published_port "claude-os" "8051")"; then
+    claude_os_port="${claude_os_published_port}"
+    if [[ "${claude_os_port}" != "${claude_os_requested_port}" ]]; then
+      log "Claude-OS is already running on host port ${claude_os_port}; updating .env to match."
+    fi
+  else
+    claude_os_port="$(select_free_port "${claude_os_requested_port}" "${librechat_port}" "${teacher_tools_port}")"
+    if [[ "${claude_os_port}" != "${claude_os_requested_port}" ]]; then
+      log "Claude-OS host port ${claude_os_requested_port} is already in use; using ${claude_os_port} instead."
+    fi
+  fi
+  set_env_value "HOST_CLAUDE_OS_PORT" "${claude_os_port}"
+
+  sync_public_urls "${public_host}" "${librechat_port}" "${teacher_tools_port}" "${claude_os_port}"
+}
+
 cd "${REPO_ROOT}"
 
 log "Checking Docker prerequisites"
@@ -184,41 +266,8 @@ else
   sync_env_example
 fi
 
-running_services="$(docker compose ps --status running --services 2>/dev/null || true)"
-public_host="$(get_env_value "STACK_PUBLIC_HOST" "localhost")"
-
-if [[ -n "${running_services}" ]]; then
-  log "Reusing configured host ports because this Docker Compose project already has running services"
-  librechat_port="$(get_env_port "HOST_LIBRECHAT_PORT" "3080")"
-  teacher_tools_port="$(get_env_port "HOST_TEACHER_TOOLS_PORT" "8010")"
-  claude_os_port="$(get_env_port "HOST_CLAUDE_OS_PORT" "8051")"
-  sync_public_urls "${public_host}" "${librechat_port}" "${teacher_tools_port}" "${claude_os_port}"
-else
-  log "Checking host ports and selecting fallbacks when defaults are already in use"
-
-  librechat_requested_port="$(get_env_port "HOST_LIBRECHAT_PORT" "3080")"
-  librechat_port="$(select_free_port "${librechat_requested_port}")"
-  if [[ "${librechat_port}" != "${librechat_requested_port}" ]]; then
-    log "LibreChat host port ${librechat_requested_port} is already in use; using ${librechat_port} instead."
-  fi
-  set_env_value "HOST_LIBRECHAT_PORT" "${librechat_port}"
-
-  teacher_tools_requested_port="$(get_env_port "HOST_TEACHER_TOOLS_PORT" "8010")"
-  teacher_tools_port="$(select_free_port "${teacher_tools_requested_port}" "${librechat_port}")"
-  if [[ "${teacher_tools_port}" != "${teacher_tools_requested_port}" ]]; then
-    log "teacher-tools host port ${teacher_tools_requested_port} is already in use; using ${teacher_tools_port} instead."
-  fi
-  set_env_value "HOST_TEACHER_TOOLS_PORT" "${teacher_tools_port}"
-
-  claude_os_requested_port="$(get_env_port "HOST_CLAUDE_OS_PORT" "8051")"
-  claude_os_port="$(select_free_port "${claude_os_requested_port}" "${librechat_port}" "${teacher_tools_port}")"
-  if [[ "${claude_os_port}" != "${claude_os_requested_port}" ]]; then
-    log "Claude-OS host port ${claude_os_requested_port} is already in use; using ${claude_os_port} instead."
-  fi
-  set_env_value "HOST_CLAUDE_OS_PORT" "${claude_os_port}"
-
-  sync_public_urls "${public_host}" "${librechat_port}" "${teacher_tools_port}" "${claude_os_port}"
-fi
+log "Checking host ports and reusing published ports from this Docker Compose project when available"
+resolve_host_ports
 
 librechat_url="http://${public_host}:${librechat_port}"
 teacher_tools_api_url="http://${public_host}:${teacher_tools_port}"
@@ -233,20 +282,26 @@ log "Waiting for LibreChat, teacher-tools, Claude-OS, and Redis readiness"
 deadline=$((SECONDS + 120))
 while (( SECONDS < deadline )); do
   if status_json="$(curl -fsS "${teacher_tools_status_url}" 2>/dev/null)" \
-    && curl -fsS "${claude_os_health_url}" >/dev/null 2>&1 \
+    && claude_health_json="$(curl -fsS "${claude_os_health_url}" 2>/dev/null)" \
     && echo "${status_json}" | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true' \
     && docker compose ps --status running --services | grep -qx 'claude-os-redis' \
-    && docker compose ps --status running --services | grep -qx 'librechat'; then
+    && docker compose ps --status running --services | grep -qx 'librechat' \
+    && docker compose ps --status running --services | grep -qx 'claude-os' \
+    && docker compose ps --status running --services | grep -qx 'teacher-tools' \
+    && echo "${claude_health_json}" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"(ok|degraded)"'; then
     break
   fi
   sleep 3
 done
 
 status_json="$(curl -fsS "${teacher_tools_status_url}")"
-curl -fsS "${claude_os_health_url}" >/dev/null
+claude_health_json="$(curl -fsS "${claude_os_health_url}")"
 docker compose ps --status running --services | grep -qx 'claude-os-redis'
 docker compose ps --status running --services | grep -qx 'librechat'
+docker compose ps --status running --services | grep -qx 'claude-os'
+docker compose ps --status running --services | grep -qx 'teacher-tools'
 echo "${status_json}" | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true'
+echo "${claude_health_json}" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"(ok|degraded)"'
 
 printf '\n'
 log "Pre-release is ready"

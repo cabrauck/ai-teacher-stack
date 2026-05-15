@@ -29,14 +29,19 @@ Desktop and on Windows through Docker Desktop with the WSL2 backend:
 ```
 
 LibreChat listens on port `3080`. The local teacher-tools API listens on port
-`8010`. Claude-OS listens on port `8051` and stores local runtime state under
-`.claude-os/`.
+`8010`. Claude-OS API/MCP listens on port `8051` and stores local runtime state
+under `.claude-os/`.
 
 The current pre-release keeps the teacher surface LibreChat-first:
 
 - LibreChat on `http://localhost:3080` for normal teacher work
-- Claude-OS on `http://localhost:8051` as the memory runtime and admin surface
+- Claude-OS API/MCP on `http://localhost:8051` for memory runtime integration
 - `GET /status` on `teacher-tools` as the aggregated runtime readiness check
+
+The upstream Claude-OS repository also contains a React/Vite management UI.
+That UI is not yet exposed by this Docker Compose runtime. The planned
+`claude-os-full-runtime` work will add a separate documented local URL for the
+Claude-OS UI and keep it distinct from the API/MCP endpoint.
 
 ## Long-term memory
 
@@ -56,6 +61,11 @@ best-effort and runs only when the configured local Ollama embedding model is
 available.
 Raw sources are not bulk ingested; promotion into the wiki must pass the shared
 privacy validator.
+
+Current limitation: the runtime bootstraps the project and folder hook, but the
+release does not yet prove document sync, embedding coverage, semantic search,
+hybrid search, reranking, or agentic RAG through automated status checks. Those
+items are tracked in the Claude-OS full runtime integration spec.
 
 ## Design notes
 

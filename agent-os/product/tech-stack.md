@@ -8,6 +8,9 @@
 - `teacher_tools` service under `services/teacher_tools/`
 - Claude-OS runtime service built from `brobertsaz/claude-os` at pinned commit
   `ee7b62bc5bf36541018a1c14592bcac2b59022f9`
+- Current Claude-OS wrapper starts the API/MCP server only; the upstream
+  React/Vite Claude-OS frontend is present in the image but not yet exposed as
+  a runtime service.
 - Redis for Claude-OS real-time learning queues
 - LibreChat as the v1 teacher frontend
 - MongoDB for LibreChat application state
@@ -39,6 +42,9 @@
 ## Frontend and Memory Shape
 
 - Claude-OS MCP is the core memory service.
+- Full Claude-OS UI, embedding coverage reporting, semantic indexing controls,
+  hybrid search, reranking, and agentic RAG are planned under
+  `2026-05-15-claude-os-full-runtime`.
 - `teacher_tools` exposes frontend-agnostic local APIs for lessons, exports,
   Schriftwesen, and memory vault operations.
 - LibreChat is the v1 teacher frontend.

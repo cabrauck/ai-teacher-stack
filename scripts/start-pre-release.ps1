@@ -73,6 +73,9 @@ function Get-EnvPort {
     if (-not [int]::TryParse($rawValue, [ref]$parsedValue)) {
         throw "Configured value for $Key must be an integer port. Current value: $rawValue"
     }
+    if ($parsedValue -lt 1 -or $parsedValue -gt 65535) {
+        throw "Configured value for $Key must be a TCP port between 1 and 65535. Current value: $rawValue"
+    }
     return $parsedValue
 }
 
@@ -92,6 +95,37 @@ function Select-FreePort {
         }
     }
     return $port
+}
+
+function Get-ComposePublishedPort {
+    param(
+        [string]$Service,
+        [int]$ContainerPort
+    )
+
+    try {
+        $mapping = docker compose port $Service $ContainerPort 2>$null
+    } catch {
+        return $null
+    }
+
+    if (-not $mapping) {
+        return $null
+    }
+
+    foreach ($line in @($mapping)) {
+        if ($line -match '^\s*invalid\b') {
+            continue
+        }
+        if ($line -match ':(\d+)\s*$') {
+            $port = 0
+            if ([int]::TryParse($Matches[1], [ref]$port)) {
+                return $port
+            }
+        }
+    }
+
+    return $null
 }
 
 function Invoke-Json {
@@ -157,19 +191,56 @@ function Sync-PublicUrls {
 
 function Resolve-HostPorts {
     $publicHost = Get-EnvValue -Key "STACK_PUBLIC_HOST" -Default "localhost"
+    $runningServices = @{}
+    foreach ($service in @(docker compose ps --status running --services 2>$null)) {
+        if ($service) {
+            $runningServices[$service] = $true
+        }
+    }
+
     $configuredPorts = @(
-        @{ Key = "HOST_LIBRECHAT_PORT"; Label = "LibreChat"; Default = 3080 },
-        @{ Key = "HOST_TEACHER_TOOLS_PORT"; Label = "teacher-tools"; Default = 8010 },
-        @{ Key = "HOST_CLAUDE_OS_PORT"; Label = "Claude-OS"; Default = 8051 }
+        @{
+            Key = "HOST_LIBRECHAT_PORT"
+            Label = "LibreChat"
+            Default = 3080
+            Service = "librechat"
+            ContainerPort = 3080
+        },
+        @{
+            Key = "HOST_TEACHER_TOOLS_PORT"
+            Label = "teacher-tools"
+            Default = 8010
+            Service = "teacher-tools"
+            ContainerPort = 8010
+        },
+        @{
+            Key = "HOST_CLAUDE_OS_PORT"
+            Label = "Claude-OS"
+            Default = 8051
+            Service = "claude-os"
+            ContainerPort = 8051
+        }
     )
     $selectedPorts = @{}
     $reservedPorts = @()
 
     foreach ($config in $configuredPorts) {
         $requestedPort = Get-EnvPort -Key $config.Key -Default $config.Default
-        $selectedPort = Select-FreePort -PreferredPort $requestedPort -ReservedPorts $reservedPorts
-        if ($selectedPort -ne $requestedPort) {
-            Write-Step "$($config.Label) host port $requestedPort is already in use; using $selectedPort instead."
+        $publishedPort = $null
+        if ($runningServices.ContainsKey($config.Service)) {
+            $publishedPort = Get-ComposePublishedPort -Service $config.Service -ContainerPort $config.ContainerPort
+        }
+
+        if ($null -ne $publishedPort) {
+            if ($publishedPort -ne $requestedPort) {
+                Write-Step "$($config.Label) is already running on host port $publishedPort; updating .env to match."
+            }
+            $selectedPort = $publishedPort
+        } else {
+            $selectedPort = Select-FreePort -PreferredPort $requestedPort -ReservedPorts $reservedPorts
+            if ($selectedPort -ne $requestedPort) {
+                Write-Step "$($config.Label) host port $requestedPort is already in use; using $selectedPort instead."
+            }
         }
         Set-EnvValue -Key $config.Key -Value "$selectedPort"
         $selectedPorts[$config.Key] = $selectedPort
@@ -206,24 +277,8 @@ if (-not (Test-Path ".env")) {
     Sync-EnvExample
 }
 
-$runningServices = @(docker compose ps --status running --services 2>$null)
-if ($runningServices.Count -gt 0) {
-    Write-Step "Reusing configured host ports because this Docker Compose project already has running services"
-    $runtimeConfig = @{
-        PublicHost = Get-EnvValue -Key "STACK_PUBLIC_HOST" -Default "localhost"
-        LibreChatPort = Get-EnvPort -Key "HOST_LIBRECHAT_PORT" -Default 3080
-        TeacherToolsPort = Get-EnvPort -Key "HOST_TEACHER_TOOLS_PORT" -Default 8010
-        ClaudeOsPort = Get-EnvPort -Key "HOST_CLAUDE_OS_PORT" -Default 8051
-    }
-    Sync-PublicUrls `
-        -PublicHost $runtimeConfig.PublicHost `
-        -LibreChatPort $runtimeConfig.LibreChatPort `
-        -TeacherToolsPort $runtimeConfig.TeacherToolsPort `
-        -ClaudeOsPort $runtimeConfig.ClaudeOsPort
-} else {
-    Write-Step "Checking host ports and selecting fallbacks when defaults are already in use"
-    $runtimeConfig = Resolve-HostPorts
-}
+Write-Step "Checking host ports and reusing published ports from this Docker Compose project when available"
+$runtimeConfig = Resolve-HostPorts
 
 $libreChatUrl = "http://$($runtimeConfig.PublicHost):$($runtimeConfig.LibreChatPort)"
 $teacherToolsApiUrl = "http://$($runtimeConfig.PublicHost):$($runtimeConfig.TeacherToolsPort)"
@@ -244,7 +299,16 @@ do {
         $runningServices = docker compose ps --status running --services
         $redisReady = $runningServices -contains "claude-os-redis"
         $libreChatReady = $runningServices -contains "librechat"
-        if ($status.ready -and $claudeHealth.status -eq "ok" -and $redisReady -and $libreChatReady) {
+        $claudeOsReady = $runningServices -contains "claude-os"
+        $teacherToolsReady = $runningServices -contains "teacher-tools"
+        if (
+            $status.ready -and
+            @("ok", "degraded") -contains $claudeHealth.status -and
+            $redisReady -and
+            $libreChatReady -and
+            $claudeOsReady -and
+            $teacherToolsReady
+        ) {
             break
         }
     } catch {
@@ -256,7 +320,16 @@ $finalStatus = Invoke-Json -Url $statusUrl
 $finalClaude = Invoke-Json -Url $claudeHealthUrl
 $finalServices = docker compose ps --status running --services
 
-if (-not ($finalStatus.ready -and $finalClaude.status -eq "ok" -and ($finalServices -contains "claude-os-redis") -and ($finalServices -contains "librechat"))) {
+if (
+    -not (
+        $finalStatus.ready -and
+        @("ok", "degraded") -contains $finalClaude.status -and
+        ($finalServices -contains "claude-os-redis") -and
+        ($finalServices -contains "librechat") -and
+        ($finalServices -contains "claude-os") -and
+        ($finalServices -contains "teacher-tools")
+    )
+) {
     throw "Stack did not become ready in time. Run .\scripts\check-pre-release.ps1 for diagnostics."
 }
 

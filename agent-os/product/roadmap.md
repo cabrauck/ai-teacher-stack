@@ -25,6 +25,10 @@ Agent-OS remains the decision and specification layer for larger changes.
   `CONTRIBUTING.md`, `docs/contributor-setup.md`, and Agent-OS standards.
 - LibreChat is the selected v1 teacher frontend; alternative chat frontends are
   not tracked as product backlog.
+- Claude-OS API/MCP is Dockerized and bootstraps the local project and
+  `vault/Wiki` knowledge-base hook, but the upstream Claude-OS frontend,
+  document/embedding verification, and full RAG controls are not yet wired into
+  the release runtime.
 - Open roadmap items are imported into GitHub Project `ai-teacher-stack
   Roadmap` as Issues.
 - LehrplanPLUS ingestion is specified as `Ready`, but not implemented.
@@ -53,6 +57,25 @@ Agent-OS remains the decision and specification layer for larger changes.
   stack when Claude-OS already provides the memory/knowledge path.
 - Keep Claude Code, Codex App, and other coding-agent clients out of the product
   frontend backlog.
+
+## v0.2.6 Claude-OS Full Runtime Integration
+
+- Use `agent-os/specs/2026-05-15-claude-os-full-runtime` as the implementation
+  gate.
+- Expose the upstream Claude-OS project UI as a documented local management
+  surface while keeping LibreChat as the teacher frontend.
+- Separate Claude-OS API/MCP health from Claude-OS UI availability in docs,
+  start scripts, and status checks.
+- Verify and report `vault/Wiki` sync into Claude-OS documents, embedding
+  coverage, semantic indexing, jobs, Redis, Ollama, and RAG mode availability.
+- Add explicit teacher-safe controls and docs for vector search, hybrid search,
+  reranking, and agentic RAG.
+- Adopt the Karpathy LLM wiki pattern for Obsidian memory operations: curated
+  raw sources, synthesized wiki pages, index/log maintenance, query filing, and
+  periodic linting.
+- Preserve the default privacy boundary: no raw `vault/Sources/`, exports,
+  credentials, student data, or confidential school documents in Claude-OS
+  indexes.
 
 ## v0.3 LehrplanPLUS Ingestion
 

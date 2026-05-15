@@ -159,12 +159,93 @@ def promote_memory_source_note(
     }
 
 
+def list_memory_wiki_pages() -> dict[str, Any]:
+    wiki_root = settings.vault_root / "Wiki"
+    pages = []
+    if wiki_root.is_dir():
+        for path in sorted(wiki_root.glob("*.md")):
+            if path.name in {"index.md", "log.md"}:
+                continue
+            title = path.stem
+            try:
+                for line in path.read_text(encoding="utf-8").splitlines():
+                    if line.startswith("# "):
+                        title = line.removeprefix("# ").strip()
+                        break
+            except OSError:
+                title = path.stem
+            pages.append(
+                {
+                    "title": title,
+                    "path": path.relative_to(settings.vault_root).as_posix(),
+                    "filename": path.name,
+                }
+            )
+
+    return {
+        "count": len(pages),
+        "pages": pages,
+        "note": "Nur privacy-gepruefte Wiki-Erinnerungen aus vault/Wiki.",
+    }
+
+
+def read_memory_wiki_page(path: str) -> dict[str, str]:
+    vault_root = settings.vault_root.resolve()
+    requested = (vault_root / path).resolve()
+    wiki_root = (vault_root / "Wiki").resolve()
+    if not requested.is_relative_to(wiki_root):
+        raise ValueError("Only pages inside vault/Wiki can be read as long-term memory.")
+    if requested.name in {"index.md", "log.md"} or requested.suffix != ".md":
+        raise ValueError("Only concrete wiki memory pages can be read.")
+    if not requested.is_file():
+        raise FileNotFoundError(f"Memory wiki page does not exist: {path}")
+
+    return {
+        "path": requested.relative_to(vault_root).as_posix(),
+        "markdown": requested.read_text(encoding="utf-8"),
+    }
+
+
+def list_exported_documents() -> dict[str, Any]:
+    export_root = settings.export_root
+    suffix_labels = {
+        ".docx": "docx",
+        ".md": "markdown",
+        ".pdf": "pdf",
+        ".odt": "odt",
+        ".zip": "package",
+    }
+    documents = []
+    if export_root.is_dir():
+        for path in sorted(export_root.rglob("*")):
+            if not path.is_file() or path.name == ".gitkeep":
+                continue
+            documents.append(
+                {
+                    "filename": path.name,
+                    "path": path.relative_to(export_root).as_posix(),
+                    "type": suffix_labels.get(path.suffix.lower(), "file"),
+                    "bytes": path.stat().st_size,
+                }
+            )
+
+    return {
+        "count": len(documents),
+        "documents": documents,
+        "root": export_root.as_posix(),
+    }
+
+
 def get_stack_status() -> dict[str, Any]:
     return build_stack_status(
         vault_root=settings.vault_root,
         export_root=settings.export_root,
         claude_os_url=settings.claude_os_url,
         librechat_url=settings.librechat_url,
+        public_host=settings.stack_public_host,
+        host_librechat_port=settings.host_librechat_port,
+        host_teacher_tools_port=settings.host_teacher_tools_port,
+        host_claude_os_port=settings.host_claude_os_port,
     )
 
 
@@ -198,6 +279,9 @@ def create_mcp_server() -> FastMCP:
     mcp.tool()(create_memory_source_note)
     mcp.tool()(write_memory_wiki_page)
     mcp.tool()(promote_memory_source_note)
+    mcp.tool()(list_memory_wiki_pages)
+    mcp.tool()(read_memory_wiki_page)
+    mcp.tool()(list_exported_documents)
     mcp.tool()(get_stack_status)
     mcp.resource("teacher://memory/wiki/index")(get_memory_wiki_index)
     mcp.resource("teacher://curriculum/records")(get_curriculum_records)

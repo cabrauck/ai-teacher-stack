@@ -12,8 +12,9 @@ memory service over privacy-checked wiki notes in `vault/Wiki/`.
 
 - **LibreChat**: primary teacher frontend for planning, writing, previews, and
   tool-assisted workflows at `http://localhost:3080`
-- **Claude-OS**: local memory runtime plus admin, review, and status surface at
-  `http://localhost:8051`
+- **Claude-OS API/MCP**: local memory runtime integration at
+  `http://localhost:8051`; use `/health` for status and `/docs` for the
+  technical API surface
 - **teacher-tools API**: local runtime API at `http://localhost:8010`
 - **Obsidian-compatible vault**: your durable local workspace under `vault/`
 
@@ -90,8 +91,9 @@ macOS / Linux shell:
 ## Local URLs
 
 - LibreChat teacher frontend: `http://localhost:3080`
-- Claude-OS admin and review UI: `http://localhost:8051`
+- Claude-OS API/MCP: `http://localhost:8051`
 - Claude-OS health: `http://localhost:8051/health`
+- Claude-OS API docs: `http://localhost:8051/docs`
 - teacher-tools API: `http://localhost:8010`
 - Aggregated stack status: `http://localhost:8010/status`
 
@@ -108,6 +110,11 @@ The aggregated stack status endpoint reports local readiness for:
 - export structure
 - memory bootstrap basics
 
+The current pre-release does not expose the upstream Claude-OS React UI yet.
+If you open `http://localhost:8051/` directly and see `405 Method Not Allowed`,
+the API service is running but the UI service is not part of this release
+runtime yet.
+
 ## Typical First Steps
 
 1. Start the stack with the script for your platform.
@@ -116,6 +123,28 @@ The aggregated stack status endpoint reports local readiness for:
 4. Use `vault/Unterricht/`, `vault/Schriftwesen/`, and `exports/` as your local
    working folders.
 5. Save only privacy-checked long-term memory in `vault/Wiki/`.
+
+## LibreChat Memory and Documents
+
+LibreChat uses MCP tools instead of a patched LibreChat sidebar. In the Teacher
+Material Assistant chat, you can ask for local state directly:
+
+```text
+Zeig mir die gespeicherten Wiki-Erinnerungen.
+```
+
+```text
+Lies die Erinnerung Wiki/kartenarbeit.md und fasse sie mit Pfadangabe zusammen.
+```
+
+```text
+Welche exportierten Dokumente liegen lokal vor?
+```
+
+These tools read local `vault/Wiki/` memories and `exports/` files through
+teacher-tools. Claude-OS-backed document counts, embedding coverage, and
+vector/hybrid/rerank search visibility are planned in the Claude-OS full runtime
+integration milestone.
 
 ## Example Checks
 

@@ -8,7 +8,7 @@ without turning the project into a large custom web app.
 The intended shape is:
 
 - **LibreChat** for normal teacher work
-- **Claude-OS** for local memory runtime, admin, review, and status
+- **Claude-OS API/MCP** for local memory runtime integration
 - **Obsidian-compatible vault files** as the durable local workspace
 - **teacher-tools API/MCP** as the local service boundary
 
@@ -17,7 +17,7 @@ The intended shape is:
 - Start, stop, and readiness scripts for Windows and shell-based platforms
 - Local Docker Compose runtime
 - LibreChat teacher frontend at `http://localhost:3080`
-- Claude-OS runtime with local state under `.claude-os/`
+- Claude-OS API/MCP runtime with local state under `.claude-os/`
 - teacher-tools MCP integration for LibreChat
 - Curriculum search
 - Lesson planning API
@@ -25,17 +25,18 @@ The intended shape is:
 - DOCX export
 - Privacy-checked wiki memory workflow
 
-## What The Claude-OS Web UI Is For
+## What Claude-OS Exposes Today
 
-Use the Claude-OS surface at `http://localhost:8051` for:
+Use the Claude-OS API/MCP service at `http://localhost:8051` for:
 
-- checking whether Claude-OS is up
-- reviewing runtime status
-- validating that the stack is alive
-- reviewing the general Claude-OS memory environment
-- administrative and diagnostic tasks
+- `http://localhost:8051/health` for runtime health
+- `http://localhost:8051/docs` for technical API documentation
+- MCP access from LibreChat and other configured local clients
 
-Do **not** treat it as the main teacher planning UI in this pre-release.
+The root URL `http://localhost:8051/` is not a web app in the current
+pre-release; it may return `405 Method Not Allowed`. The upstream Claude-OS UI
+is planned as a separate runtime service in the Claude-OS full runtime
+integration milestone.
 
 ## What LibreChat Is For
 
@@ -44,6 +45,8 @@ Use LibreChat for:
 - drafting lesson structures
 - generating artifact-friendly Markdown or HTML previews
 - using teacher-tools and Claude-OS through MCP
+- listing and reading local `vault/Wiki/` memories through teacher-tools MCP
+- listing generated local documents under `exports/`
 - exporting reviewed material to local files
 - working with OpenRouter or locally configured BYOK providers
 
@@ -83,6 +86,7 @@ If the start script fails:
 - open `http://localhost:3080`
 - open `http://localhost:8010/status`
 - open `http://localhost:8051/health`
+- open `http://localhost:8051/docs` for the technical Claude-OS API surface
 
 If Claude-OS is not reachable:
 
