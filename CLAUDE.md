@@ -11,6 +11,8 @@ This is a local-first AI teacher workspace. It should help a teacher prepare, ad
 - Keep the system understandable.
 - Keep contributor setup IDE-agnostic: a cloned repository plus `.env`, `uv`,
   Docker Compose, and the documented checks should be enough to start.
+- On Windows hosts, prefer an Ubuntu WSL2 checkout at `~/ai-teacher-stack` and
+  treat it as the active workspace for agent and IDE work.
 - Keep LibreChat as the v1 teacher frontend while preserving local file
   workflows for durable state and exports.
 - Use Obsidian-compatible Markdown for durable memory.

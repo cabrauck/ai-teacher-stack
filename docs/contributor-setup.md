@@ -18,6 +18,11 @@ cd ../..
 python scripts/build_release.py --version dev --check
 ```
 
+On Windows hosts, run the fast start inside Ubuntu on WSL2 and keep the active
+repository checkout at `~/ai-teacher-stack`. Avoid day-to-day development from
+`/mnt/<drive>/...` or a parallel native Windows checkout unless you are doing a
+one-time migration or recovery step.
+
 If `make` is available, the equivalent repository-root check is:
 
 ```bash
@@ -50,17 +55,29 @@ Recommended local baseline:
 - Optional: `make`
 - Optional: Ollama for local model experiments
 
+Recommended Windows-host baseline:
+
+- WSL2 with Ubuntu
+- repository cloned to `~/ai-teacher-stack`
+- VS Code Remote WSL, JetBrains WSL support, Cursor pointed at the WSL path, or
+  terminal/agent sessions started inside Ubuntu
+
 Use these entrypoints:
 
-- VS Code: open the repository root and use the integrated terminal for `uv`
+- VS Code: on Windows hosts, use Remote WSL and open `~/ai-teacher-stack`;
+  otherwise open the repository root and use the integrated terminal for `uv`
   and `make` commands.
-- JetBrains IDEs: open the repository root, set the Python interpreter from the
-  `services/teacher_tools` environment, and run tests from that service folder.
-- Cursor: open the repository root and keep agent edits scoped to the current
-  task and relevant Agent-OS spec.
-- Codex: start from `AGENTS.md`, `CONTRIBUTING.md`, and this guide.
-- Claude Code: start from `CLAUDE.md`, `AGENTS.md`, and this guide.
-- Generic terminal workflow: use the commands in the fast start section.
+- JetBrains IDEs: on Windows hosts, open the WSL checkout and use a WSL-based
+  Python interpreter; otherwise open the repository root and run tests from
+  `services/teacher_tools`.
+- Cursor: on Windows hosts, open the Ubuntu checkout and keep agent edits
+  scoped to the current task and relevant Agent-OS spec.
+- Codex: start from `AGENTS.md`, `CONTRIBUTING.md`, and this guide, and prefer
+  the Ubuntu WSL2 checkout on Windows hosts.
+- Claude Code: start from `CLAUDE.md`, `AGENTS.md`, and this guide, and prefer
+  the Ubuntu WSL2 checkout on Windows hosts.
+- Generic terminal workflow: use the commands in the fast start section from
+  the active Linux checkout.
 
 ## What to read before changing code
 

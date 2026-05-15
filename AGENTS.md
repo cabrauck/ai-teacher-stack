@@ -28,6 +28,12 @@ from `.env.example`, attach any coding IDE or agent, and run the checks below.
 Use `CONTRIBUTING.md` and `docs/contributor-setup.md` as the human contributor
 entrypoints.
 
+On Windows hosts, prefer a WSL2 Ubuntu checkout under `~/ai-teacher-stack`.
+Treat the Linux checkout as the active development workspace for Codex, Claude
+Code, Cursor, VS Code Remote WSL, JetBrains WSL setups, and terminal work. Use
+native Windows checkouts or `/mnt/<drive>/...` paths only for one-time
+migration, bootstrap, or recovery tasks.
+
 From repository root:
 
 ```bash
@@ -120,11 +126,15 @@ Definition of Done for Agent-OS-scoped work:
 ## Release and workspace policy
 
 - Treat the GitHub repository as the development workspace.
+- On Windows hosts, treat the Ubuntu WSL2 clone at `~/ai-teacher-stack` as the
+  canonical local development workspace.
 - Treat GitHub Releases as user-only runtime packages.
 - Do not create a dev release ZIP; developers should clone the repository.
 - Keep contributor onboarding IDE-agnostic: VS Code, JetBrains IDEs, Cursor,
   Codex, Claude Code, and terminal workflows should all work from the same
   checkout and checks.
+- Keep agent instructions, IDE settings, and local automation aligned with the
+  Ubuntu WSL2 workspace when contributors work from Windows.
 - Keep Agent-OS, specs, tests, `.claude/`, `.github/`, `AGENTS.md`, and `CLAUDE.md` out of user release packages.
 - Keep user releases limited to runtime files, sample curriculum data, prompts, templates, empty vault/export skeletons, and user documentation.
 - When adding runtime files, update `scripts/build_release.py` and run `make release-check`.

@@ -28,6 +28,11 @@ VS Code, JetBrains IDEs, Cursor, Codex, Claude Code, and terminal-only workflows
 all use the same checkout and checks. See
 `docs/contributor-setup.md` for IDE-specific notes.
 
+On Windows hosts, the preferred contributor path is to run that setup inside
+Ubuntu on WSL2 and keep the active checkout at `~/ai-teacher-stack`. Treat a
+native Windows checkout or `/mnt/<drive>/...` path as a fallback for migration
+or recovery, not as the default development workspace.
+
 ## Before you start
 
 Read these files first:
@@ -123,6 +128,16 @@ uv run ruff check .
 uv run pytest
 cd ../..
 python scripts/build_release.py --version dev --check
+```
+
+Preferred Windows-host setup in WSL2 Ubuntu:
+
+```bash
+cd ~
+git clone https://github.com/cabrauck/ai-teacher-stack.git
+cd ai-teacher-stack
+cp .env.example .env
+make check
 ```
 
 From `services/teacher_tools`:
