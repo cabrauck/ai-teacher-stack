@@ -39,7 +39,8 @@ Read these files first:
 
 1. `README.md`
 2. `AGENTS.md`
-3. `CLAUDE.md`
+3. `CLAUDE.md` if you are using Claude Code; it imports `AGENTS.md` and should
+   stay Claude-specific
 4. `docs/contributor-setup.md`
 5. `docs/privacy-boundary.md`
 6. `docs/release-policy.md`
@@ -329,7 +330,8 @@ Before opening or merging a PR, make sure:
 - Keep `README.md` focused on users, the project pitch, and local usage.
 - Put contributor workflow and development policy in `CONTRIBUTING.md` and
   `docs/contributor-setup.md`.
-- Put agent-specific operating instructions in `AGENTS.md` and `CLAUDE.md`.
+- Put shared agent operating instructions in `AGENTS.md`.
+- Keep `CLAUDE.md` as the Claude-specific overlay that imports `AGENTS.md`.
 
 If a README change makes contributor onboarding less discoverable, add or update
 the link to this file instead of moving development detail back into the pitch.

@@ -1,6 +1,11 @@
 # AGENTS.md
 
-Instructions for Codex and other coding agents working in this repository.
+Authoritative shared instructions for coding agents working in this repository.
+Use this file as the single source of truth for cross-agent project policy.
+
+`CLAUDE.md` should import this file and contain only Claude-specific overlay
+instructions. Agent instruction files are developer-only context and do not
+change LibreChat runtime configuration.
 
 ## Mission
 
@@ -128,6 +133,9 @@ Definition of Done for Agent-OS-scoped work:
 - Treat the GitHub repository as the development workspace.
 - On Windows hosts, treat the Ubuntu WSL2 clone at `~/ai-teacher-stack` as the
   canonical local development workspace.
+- Treat `AGENTS.md` as the canonical shared agent manifest.
+- Keep `CLAUDE.md` limited to Claude-specific instructions that import this
+  file instead of duplicating it.
 - Treat GitHub Releases as user-only runtime packages.
 - Do not create a dev release ZIP; developers should clone the repository.
 - Keep contributor onboarding IDE-agnostic: VS Code, JetBrains IDEs, Cursor,

@@ -74,8 +74,8 @@ Use these entrypoints:
   scoped to the current task and relevant Agent-OS spec.
 - Codex: start from `AGENTS.md`, `CONTRIBUTING.md`, and this guide, and prefer
   the Ubuntu WSL2 checkout on Windows hosts.
-- Claude Code: start from `CLAUDE.md`, `AGENTS.md`, and this guide, and prefer
-  the Ubuntu WSL2 checkout on Windows hosts.
+- Claude Code: start from `CLAUDE.md` and this guide; `CLAUDE.md` imports
+  `AGENTS.md` and should contain only Claude-specific overlay instructions.
 - Generic terminal workflow: use the commands in the fast start section from
   the active Linux checkout.
 
