@@ -12,6 +12,9 @@ class Settings(BaseModel):
     ollama_default_model: str = os.getenv("OLLAMA_DEFAULT_MODEL", "llama3.1:8b")
     claude_os_url: str = os.getenv("CLAUDE_OS_URL", "http://claude-os:8051")
     claude_os_index_root: Path = Path(os.getenv("CLAUDE_OS_INDEX_ROOT", "/app/vault/Wiki"))
+    librechat_url: str = os.getenv("LIBRECHAT_URL", "http://librechat:3080")
+    teacher_tools_mcp_host: str = os.getenv("TEACHER_TOOLS_MCP_HOST", "0.0.0.0")
+    teacher_tools_mcp_port: int = int(os.getenv("TEACHER_TOOLS_MCP_PORT", "8020"))
     memory_require_privacy_validation: bool = (
         os.getenv("MEMORY_REQUIRE_PRIVACY_VALIDATION", "true").lower() == "true"
     )

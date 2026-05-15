@@ -11,7 +11,8 @@ This is a local-first AI teacher workspace. It should help a teacher prepare, ad
 - Keep the system understandable.
 - Keep contributor setup IDE-agnostic: a cloned repository plus `.env`, `uv`,
   Docker Compose, and the documented checks should be enough to start.
-- Prefer local file workflows over a large web UI.
+- Keep LibreChat as the v1 teacher frontend while preserving local file
+  workflows for durable state and exports.
 - Use Obsidian-compatible Markdown for durable memory.
 - Treat Claude-OS as the core local memory runtime over `vault/Wiki/`.
 - Keep Obsidian as the human-readable source of truth for teacher memory.

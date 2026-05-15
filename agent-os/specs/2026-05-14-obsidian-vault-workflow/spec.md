@@ -12,7 +12,8 @@ surface and make Claude-OS the core local runtime memory service behind it.
 - Agent-OS remains the first development gate for larger changes.
 - Agent-OS is not a teacher frontend and not the runtime memory layer.
 - Claude-OS is the core runtime memory service.
-- Teacher frontends stay interchangeable: Claude Code, Codex, a chat LLM, or a later UI.
+- LibreChat is the v1 teacher frontend; Claude-OS remains the runtime memory
+  service behind it.
 
 ## Runtime Shape
 

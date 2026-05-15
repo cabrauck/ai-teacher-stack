@@ -108,6 +108,7 @@ def stack_status():
         vault_root=settings.vault_root,
         export_root=settings.export_root,
         claude_os_url=settings.claude_os_url,
+        librechat_url=settings.librechat_url,
     )
 
 

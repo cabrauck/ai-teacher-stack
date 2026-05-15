@@ -1,10 +1,215 @@
-"""MCP wrapper placeholder.
+from __future__ import annotations
 
-The initial runtime uses FastAPI because it is easy to test locally and through
-Docker. A later milestone should wrap the same pure functions with an MCP
-server for Claude Code, Codex, or other MCP clients.
+import json
+from typing import Any
 
-Keep all real logic in teacher_tools.curriculum, teacher_tools.lessons,
-teacher_tools.schriftwesen, and teacher_tools.documents so the API and MCP
-surfaces stay consistent.
-"""
+from mcp.server.fastmcp import FastMCP
+
+from teacher_tools.curriculum import load_curriculum_records, search_curriculum
+from teacher_tools.documents import export_lesson_docx, lesson_to_markdown
+from teacher_tools.lessons import generate_lesson_plan
+from teacher_tools.memory import (
+    create_source_note,
+    promote_source_to_wiki,
+    read_memory_index,
+    write_wiki_page,
+)
+from teacher_tools.models import LessonRequest
+from teacher_tools.schriftwesen import (
+    WeeklyPlanRequest,
+    generate_weekly_plan,
+    schriftwesen_to_markdown,
+)
+from teacher_tools.settings import settings
+from teacher_tools.stack_status import build_stack_status
+
+
+def _records() -> list[dict[str, Any]]:
+    return [
+        record.model_dump(mode="json")
+        for record in load_curriculum_records(settings.curriculum_root)
+    ]
+
+
+def search_curriculum_records(query: str = "") -> dict[str, Any]:
+    records = load_curriculum_records(settings.curriculum_root)
+    return {
+        "query": query,
+        "results": [
+            record.model_dump(mode="json")
+            for record in search_curriculum(records, query)
+        ],
+    }
+
+
+def create_lesson_markdown(
+    subject: str,
+    topic: str,
+    grade_band: str = "3/4",
+    duration_minutes: int = 45,
+) -> dict[str, str]:
+    records = load_curriculum_records(settings.curriculum_root)
+    lesson = generate_lesson_plan(
+        LessonRequest(
+            subject=subject,
+            grade_band=grade_band,
+            topic=topic,
+            duration_minutes=duration_minutes,
+        ),
+        records,
+    )
+    return {"markdown": lesson_to_markdown(lesson)}
+
+
+def export_lesson_docx_file(
+    subject: str,
+    topic: str,
+    grade_band: str = "3/4",
+    duration_minutes: int = 45,
+    filename: str | None = None,
+) -> dict[str, str]:
+    records = load_curriculum_records(settings.curriculum_root)
+    lesson = generate_lesson_plan(
+        LessonRequest(
+            subject=subject,
+            grade_band=grade_band,
+            topic=topic,
+            duration_minutes=duration_minutes,
+        ),
+        records,
+    )
+    path = export_lesson_docx(lesson, settings.export_root, filename=filename)
+    return {"path": path.as_posix()}
+
+
+def create_weekly_plan_markdown(
+    woche: str,
+    klasse: str,
+    themen: list[str] | None = None,
+) -> dict[str, str]:
+    plan = generate_weekly_plan(
+        WeeklyPlanRequest(
+            woche=woche,
+            klasse=klasse,
+            themen=themen or [],
+            personenbezogene_daten=False,
+        )
+    )
+    return {"markdown": schriftwesen_to_markdown(plan)}
+
+
+def create_memory_source_note(
+    title: str,
+    body: str,
+    source_type: str = "note",
+    tags: list[str] | None = None,
+) -> dict[str, str]:
+    result = create_source_note(
+        settings.vault_root,
+        title=title,
+        body=body,
+        source_type=source_type,
+        tags=tags or [],
+    )
+    return {
+        "title": result.title,
+        "path": result.relative_path,
+        "privacy_status": result.privacy_status,
+    }
+
+
+def write_memory_wiki_page(
+    title: str,
+    body: str,
+    tags: list[str] | None = None,
+    source_path: str | None = None,
+) -> dict[str, str]:
+    result = write_wiki_page(
+        settings.vault_root,
+        title=title,
+        body=body,
+        tags=tags or [],
+        source_path=source_path,
+    )
+    return {
+        "title": result.title,
+        "path": result.relative_path,
+        "privacy_status": result.privacy_status,
+    }
+
+
+def promote_memory_source_note(
+    source_path: str,
+    title: str | None = None,
+    summary: str | None = None,
+    tags: list[str] | None = None,
+) -> dict[str, str]:
+    result = promote_source_to_wiki(
+        settings.vault_root,
+        source_path=source_path,
+        title=title,
+        summary=summary,
+        tags=tags or [],
+    )
+    return {
+        "source_path": result.source_path,
+        "title": result.wiki.title,
+        "path": result.wiki.relative_path,
+        "privacy_status": result.wiki.privacy_status,
+    }
+
+
+def get_stack_status() -> dict[str, Any]:
+    return build_stack_status(
+        vault_root=settings.vault_root,
+        export_root=settings.export_root,
+        claude_os_url=settings.claude_os_url,
+        librechat_url=settings.librechat_url,
+    )
+
+
+def get_memory_wiki_index() -> str:
+    _path, markdown = read_memory_index(settings.vault_root)
+    return markdown
+
+
+def get_curriculum_records() -> str:
+    return json.dumps(_records(), ensure_ascii=False, indent=2)
+
+
+def create_mcp_server() -> FastMCP:
+    mcp = FastMCP(
+        "ai-teacher-stack teacher tools",
+        host=settings.teacher_tools_mcp_host,
+        port=settings.teacher_tools_mcp_port,
+        stateless_http=True,
+        json_response=True,
+        instructions=(
+            "Tools for privacy-conscious teacher planning. Do not request or store "
+            "student names, grades, diagnoses, parent communication, health data, "
+            "credentials, or confidential school documents."
+        ),
+    )
+
+    mcp.tool()(search_curriculum_records)
+    mcp.tool()(create_lesson_markdown)
+    mcp.tool()(export_lesson_docx_file)
+    mcp.tool()(create_weekly_plan_markdown)
+    mcp.tool()(create_memory_source_note)
+    mcp.tool()(write_memory_wiki_page)
+    mcp.tool()(promote_memory_source_note)
+    mcp.tool()(get_stack_status)
+    mcp.resource("teacher://memory/wiki/index")(get_memory_wiki_index)
+    mcp.resource("teacher://curriculum/records")(get_curriculum_records)
+    return mcp
+
+
+mcp = create_mcp_server()
+
+
+def main() -> None:
+    mcp.run(transport="streamable-http")
+
+
+if __name__ == "__main__":
+    main()

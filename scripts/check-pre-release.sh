@@ -22,6 +22,13 @@ else
 fi
 
 printf '\n'
+if curl -fsS http://localhost:3080 >/dev/null 2>&1; then
+  log "LibreChat teacher frontend is reachable at http://localhost:3080"
+else
+  log "LibreChat teacher frontend is not reachable"
+fi
+
+printf '\n'
 if claude_json="$(curl -fsS http://localhost:8051/health 2>/dev/null)"; then
   log "Claude-OS health"
   printf '%s\n' "${claude_json}"

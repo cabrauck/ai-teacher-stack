@@ -8,6 +8,17 @@ __pycache__/
 dist/
 data/qdrant/
 data/rag/
+.librechat/**
+!.librechat/
+!.librechat/.gitkeep
+!.librechat/images/
+!.librechat/images/.gitkeep
+!.librechat/logs/
+!.librechat/logs/.gitkeep
+!.librechat/mongodb/
+!.librechat/mongodb/.gitkeep
+!.librechat/uploads/
+!.librechat/uploads/.gitkeep
 .claude-os/**
 !.claude-os/
 !.claude-os/.gitkeep

@@ -13,6 +13,6 @@ COPY src ./src
 
 RUN uv sync --frozen --no-dev
 
-EXPOSE 8010
+EXPOSE 8010 8020
 
 CMD ["uv", "run", "uvicorn", "teacher_tools.api:app", "--host", "0.0.0.0", "--port", "8010"]

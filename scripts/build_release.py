@@ -30,7 +30,6 @@ REQUIRED_PACKAGE_PATHS = {
     "NOTICE.md",
     "README.md",
     "docker-compose.yml",
-    "docs/agent-client-setup.md",
     "docs/architecture.md",
     "docs/pre-release-guide.md",
     "docs/privacy-boundary.md",
@@ -46,10 +45,16 @@ REQUIRED_PACKAGE_PATHS = {
     ".claude-os/logs/.gitkeep",
     ".claude-os/redis/.gitkeep",
     ".claude-os/uploads/.gitkeep",
+    ".librechat/.gitkeep",
+    ".librechat/images/.gitkeep",
+    ".librechat/logs/.gitkeep",
+    ".librechat/mongodb/.gitkeep",
+    ".librechat/uploads/.gitkeep",
     "integrations/claude-os/bootstrap_vault.py",
     "integrations/claude-os/Dockerfile",
     "integrations/claude-os/README.md",
     "integrations/claude-os/entrypoint.sh",
+    "integrations/librechat/librechat.yaml",
     "prompts/lesson-planner.md",
     "scripts/start-pre-release.ps1",
     "scripts/start-pre-release.sh",
@@ -168,10 +173,10 @@ def collect_entries(repo_root: Path) -> list[PackageEntry]:
         "CITATION.cff",
         "NOTICE.md",
         "docker-compose.yml",
-        "docs/agent-client-setup.md",
         "docs/architecture.md",
         "docs/pre-release-guide.md",
         "docs/privacy-boundary.md",
+        "integrations/librechat/librechat.yaml",
         "scripts/check-pre-release.ps1",
         "scripts/check-pre-release.sh",
         "scripts/init-vault.sh",
@@ -195,6 +200,7 @@ def collect_entries(repo_root: Path) -> list[PackageEntry]:
         add_tree(entries, repo_root, directory)
 
     add_skeleton_keep_files(entries, repo_root, ".claude-os")
+    add_skeleton_keep_files(entries, repo_root, ".librechat")
     add_skeleton_keep_files(entries, repo_root, "exports")
     add_skeleton_keep_files(entries, repo_root, "vault")
 
@@ -262,6 +268,9 @@ def validate_zip(archive_path: Path) -> None:
 
         if relative.as_posix().startswith(".claude-os/") and relative.name != ".gitkeep":
             errors.append(f"User package must include only Claude-OS skeleton files: {member}")
+
+        if relative.as_posix().startswith(".librechat/") and relative.name != ".gitkeep":
+            errors.append(f"User package must include only LibreChat skeleton files: {member}")
 
     missing = sorted(REQUIRED_PACKAGE_PATHS - relative_members)
     if missing:

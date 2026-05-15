@@ -53,9 +53,11 @@ im Alltag, wird aber schnell unubersichtlich.
 
 - Lokalbetrieb ist der Standard.
 - Obsidian-Vault und erzeugte Dokumente bleiben auf dem eigenen Rechner.
+- LibreChat ist die Lehreroberflaeche fuer v1.
 - Claude-OS ist der zentrale lokale Memory-Dienst.
-- Die Lehrkraft-Oberflache bleibt austauschbar: Claude Code, Codex, Chat-LLM
-  oder spater eine eigene UI.
+- LibreChat ist eng mit Claude-OS und den lokalen teacher-tools verbunden.
+- OpenRouter ist der Standardweg fuer LLM-Zugriff; BYOK fuer ausgewaehlte
+  Frontier-Anbieter bleibt lokal moeglich.
 - Der Einstieg beginnt mit Lehrkraft-Ablaufen, nicht mit
   Schulerdaten-Ablaufen.
 - Unterrichtsplanung wird an strukturierte Lehrplandaten angebunden.

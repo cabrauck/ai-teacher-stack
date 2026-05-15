@@ -35,3 +35,24 @@ def test_claude_os_wrapper_bootstraps_wiki_knowledge_base():
     assert "project_memories" in bootstrap
     assert "hook.enable_kb_autosync" in bootstrap
     assert "sync_kb_folder" in bootstrap
+
+
+def test_default_compose_includes_librechat_teacher_frontend_without_duplicate_rag():
+    repo_root = Path(__file__).resolve().parents[3]
+    compose = (repo_root / "docker-compose.yml").read_text(encoding="utf-8")
+    librechat_config = (repo_root / "integrations/librechat/librechat.yaml").read_text(
+        encoding="utf-8"
+    )
+
+    assert "  librechat:" in compose
+    assert "  librechat-mongodb:" in compose
+    assert "  teacher-tools-mcp:" in compose
+    assert "3080:3080" in compose
+    assert "teacher-tools-mcp:8020" in librechat_config
+    assert "claude-os:8051" in librechat_config
+    assert "OpenRouter" in librechat_config
+    assert "artifacts: true" in librechat_config
+    assert "librechat-rag-api" not in compose
+    assert "librechat-vectordb" not in compose
+    assert "librechat-meilisearch" not in compose
+    assert 'SEARCH: "false"' in compose

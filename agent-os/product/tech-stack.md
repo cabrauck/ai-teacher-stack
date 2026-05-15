@@ -9,6 +9,8 @@
 - Claude-OS runtime service built from `brobertsaz/claude-os` at pinned commit
   `ee7b62bc5bf36541018a1c14592bcac2b59022f9`
 - Redis for Claude-OS real-time learning queues
+- LibreChat as the v1 teacher frontend
+- MongoDB for LibreChat application state
 - Local files as primary state
 - Obsidian-compatible Markdown in `vault/`
 - Claude-OS local state under `.claude-os/`
@@ -39,5 +41,11 @@
 - Claude-OS MCP is the core memory service.
 - `teacher_tools` exposes frontend-agnostic local APIs for lessons, exports,
   Schriftwesen, and memory vault operations.
-- Teacher frontends can be Claude Code, Codex, a chat LLM, or a later UI.
+- LibreChat is the v1 teacher frontend.
+- LibreChat connects to Claude-OS and teacher-tools through MCP.
+- LibreChat RAG API, PGVector, and MeiliSearch are not default runtime
+  components; Claude-OS owns the v1 memory/knowledge path.
+- Claude Code, Codex App, and similar coding-agent clients are contributor
+  tools only, not product frontends or release targets.
+- The v2 custom frontend is planned with Vercel AI SDK.
 - Later opt-in export adapters for BYCS or OneDrive

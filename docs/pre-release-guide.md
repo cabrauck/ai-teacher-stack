@@ -7,16 +7,18 @@ without turning the project into a large custom web app.
 
 The intended shape is:
 
-- **Claude Code** or **Codex App** for normal work
-- **Claude-OS web UI** for admin, review, and status
+- **LibreChat** for normal teacher work
+- **Claude-OS** for local memory runtime, admin, review, and status
 - **Obsidian-compatible vault files** as the durable local workspace
-- **teacher-tools API** as the local service boundary
+- **teacher-tools API/MCP** as the local service boundary
 
 ## What Is Ready Today
 
 - Start, stop, and readiness scripts for Windows and shell-based platforms
 - Local Docker Compose runtime
+- LibreChat teacher frontend at `http://localhost:3080`
 - Claude-OS runtime with local state under `.claude-os/`
+- teacher-tools MCP integration for LibreChat
 - Curriculum search
 - Lesson planning API
 - Schriftwesen and handover generation
@@ -35,15 +37,15 @@ Use the Claude-OS surface at `http://localhost:8051` for:
 
 Do **not** treat it as the main teacher planning UI in this pre-release.
 
-## What The Agent Clients Are For
+## What LibreChat Is For
 
-Use Claude Code or Codex App for:
+Use LibreChat for:
 
-- reading and editing notes in `vault/`
 - drafting lesson structures
-- shaping Markdown before export
-- reviewing generated files in `exports/`
-- navigating the local project and prompts
+- generating artifact-friendly Markdown or HTML previews
+- using teacher-tools and Claude-OS through MCP
+- exporting reviewed material to local files
+- working with OpenRouter or locally configured BYOK providers
 
 ## Teacher Workflow Model
 
@@ -51,7 +53,7 @@ Use Claude Code or Codex App for:
 
 1. Draft or update a note in `vault/Unterricht/`
 2. Search curriculum references with the local API if needed
-3. Work with the result in Claude Code or Codex App
+3. Work with the result in LibreChat
 4. Export classroom-ready output to `exports/`
 
 ### Schriftwesen
@@ -73,7 +75,8 @@ If the start script fails:
 
 - run the matching `check-pre-release` script
 - verify Docker Desktop is running
-- verify ports `8010` and `8051` are free
+- verify ports `3080`, `8010`, and `8051` are free
+- open `http://localhost:3080`
 - open `http://localhost:8010/status`
 - open `http://localhost:8051/health`
 

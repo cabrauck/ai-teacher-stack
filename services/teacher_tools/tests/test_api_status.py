@@ -22,6 +22,7 @@ def test_status_api_reports_ready_stack(tmp_path: Path, monkeypatch):
     monkeypatch.setattr(api.settings, "vault_root", vault_root)
     monkeypatch.setattr(api.settings, "export_root", export_root)
     monkeypatch.setattr(api.settings, "claude_os_url", "http://claude-os:8051")
+    monkeypatch.setattr(api.settings, "librechat_url", "http://librechat:3080")
     monkeypatch.setattr(
         stack_status,
         "inspect_claude_os_service",
@@ -29,6 +30,17 @@ def test_status_api_reports_ready_stack(tmp_path: Path, monkeypatch):
             "status": "ok",
             "url": "http://claude-os:8051",
             "health_url": "http://claude-os:8051/health",
+            "reachable": True,
+            "http_status": 200,
+        },
+    )
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_librechat_service",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "url": "http://librechat:3080",
+            "health_url": "http://librechat:3080/",
             "reachable": True,
             "http_status": 200,
         },
@@ -42,6 +54,7 @@ def test_status_api_reports_ready_stack(tmp_path: Path, monkeypatch):
     assert payload["status"] == "ok"
     assert payload["ready"] is True
     assert payload["services"]["claude_os"]["status"] == "ok"
+    assert payload["services"]["librechat"]["status"] == "ok"
     assert payload["storage"]["exports"]["is_empty"] is True
 
 
@@ -52,6 +65,7 @@ def test_status_api_reports_unreachable_claude_os(tmp_path: Path, monkeypatch):
     export_root.mkdir()
     monkeypatch.setattr(api.settings, "vault_root", vault_root)
     monkeypatch.setattr(api.settings, "export_root", export_root)
+    monkeypatch.setattr(api.settings, "librechat_url", "http://librechat:3080")
     monkeypatch.setattr(
         stack_status,
         "inspect_claude_os_service",
@@ -61,6 +75,17 @@ def test_status_api_reports_unreachable_claude_os(tmp_path: Path, monkeypatch):
             "health_url": "http://claude-os:8051/health",
             "reachable": False,
             "detail": "connection refused",
+        },
+    )
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_librechat_service",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "url": "http://librechat:3080",
+            "health_url": "http://librechat:3080/",
+            "reachable": True,
+            "http_status": 200,
         },
     )
     client = TestClient(api.app)
@@ -74,9 +99,10 @@ def test_status_api_reports_unreachable_claude_os(tmp_path: Path, monkeypatch):
     assert payload["services"]["claude_os"]["detail"] == "connection refused"
 
 
-def test_status_api_reports_incomplete_vault_bootstrap(tmp_path: Path, monkeypatch):
+def test_status_api_reports_unreachable_librechat(tmp_path: Path, monkeypatch):
     vault_root = tmp_path / "vault"
     export_root = tmp_path / "exports"
+    _bootstrap_vault(vault_root)
     export_root.mkdir()
     monkeypatch.setattr(api.settings, "vault_root", vault_root)
     monkeypatch.setattr(api.settings, "export_root", export_root)
@@ -87,6 +113,57 @@ def test_status_api_reports_incomplete_vault_bootstrap(tmp_path: Path, monkeypat
             "status": "ok",
             "url": "http://claude-os:8051",
             "health_url": "http://claude-os:8051/health",
+            "reachable": True,
+            "http_status": 200,
+        },
+    )
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_librechat_service",
+        lambda *_args, **_kwargs: {
+            "status": "error",
+            "url": "http://librechat:3080",
+            "health_url": "http://librechat:3080/",
+            "reachable": False,
+            "detail": "connection refused",
+        },
+    )
+    client = TestClient(api.app)
+
+    response = client.get("/status")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["status"] == "degraded"
+    assert payload["ready"] is False
+    assert payload["services"]["librechat"]["detail"] == "connection refused"
+
+
+def test_status_api_reports_incomplete_vault_bootstrap(tmp_path: Path, monkeypatch):
+    vault_root = tmp_path / "vault"
+    export_root = tmp_path / "exports"
+    export_root.mkdir()
+    monkeypatch.setattr(api.settings, "vault_root", vault_root)
+    monkeypatch.setattr(api.settings, "export_root", export_root)
+    monkeypatch.setattr(api.settings, "librechat_url", "http://librechat:3080")
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_claude_os_service",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "url": "http://claude-os:8051",
+            "health_url": "http://claude-os:8051/health",
+            "reachable": True,
+            "http_status": 200,
+        },
+    )
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_librechat_service",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "url": "http://librechat:3080",
+            "health_url": "http://librechat:3080/",
             "reachable": True,
             "http_status": 200,
         },
@@ -108,6 +185,7 @@ def test_status_api_reports_missing_export_root(tmp_path: Path, monkeypatch):
     export_root = tmp_path / "exports"
     monkeypatch.setattr(api.settings, "vault_root", vault_root)
     monkeypatch.setattr(api.settings, "export_root", export_root)
+    monkeypatch.setattr(api.settings, "librechat_url", "http://librechat:3080")
     monkeypatch.setattr(
         stack_status,
         "inspect_claude_os_service",
@@ -115,6 +193,17 @@ def test_status_api_reports_missing_export_root(tmp_path: Path, monkeypatch):
             "status": "ok",
             "url": "http://claude-os:8051",
             "health_url": "http://claude-os:8051/health",
+            "reachable": True,
+            "http_status": 200,
+        },
+    )
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_librechat_service",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "url": "http://librechat:3080",
+            "health_url": "http://librechat:3080/",
             "reachable": True,
             "http_status": 200,
         },

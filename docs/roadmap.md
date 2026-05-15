@@ -25,7 +25,10 @@
 - [x] Add an aggregated local stack status endpoint.
 - [x] Position Claude-OS web UI as an admin and review surface.
 - [x] Add teacher-facing pre-release documentation.
-- [x] Add Claude Code and Codex App setup documentation with runtime-safe snippets.
+- [x] Add LibreChat as the v1 teacher frontend.
+- [x] Connect LibreChat to Claude-OS and teacher-tools through MCP.
+- [x] Keep duplicate LibreChat RAG/vector/search services out of the default
+  stack when Claude-OS provides the memory/knowledge path.
 
 ## Milestone 2: Curriculum grounding
 
@@ -51,6 +54,7 @@
 - [ ] Add solution-key export.
 - [ ] Add visible license metadata once the Materiallizenzen model is implemented.
 - [ ] Add PDF export path.
+- [ ] Evaluate browser preview for DOCX/PDF/ODT after LibreChat v1 stabilizes.
 
 ## Milestone 4: Schriftwesen and handover
 
@@ -71,3 +75,12 @@
 - [ ] Add disabled-by-default OneDrive adapter.
 - [ ] Evaluate BYCS Drive sync options.
 - [ ] Keep cloud exports manual or approval-gated.
+
+## Backlog Decisions
+
+- [ ] Decide whether Open Design should become a teacher-facing branding tool
+  for consistent worksheets, plans, board prompts, and export templates.
+- [ ] Decide later whether Open Design should also support Vercel AI SDK v2
+  frontend development.
+- [ ] Build the v2 custom frontend with Vercel AI SDK after the LibreChat,
+  Claude-OS, teacher-tools MCP, and preview workflows are stable.

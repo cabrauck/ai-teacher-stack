@@ -147,10 +147,11 @@ Claude-OS creates its local `ai-teacher-stack` project and the wiki knowledge
 base hook under `vault/Wiki/` on startup. The first content sync only runs when
 the configured local Ollama embedding model is available.
 
-The current pre-release is intentionally agent-first:
+The current pre-release is LibreChat-first for teacher workflows:
 
-- Claude Code or Codex App for daily work
-- Claude-OS at `http://localhost:8051` as admin and review UI
+- LibreChat at `http://localhost:3080` as the v1 teacher frontend
+- Claude-OS at `http://localhost:8051` as memory runtime and admin UI
+- teacher-tools MCP as the LibreChat tool bridge
 - `http://localhost:8010/status` as aggregated readiness endpoint
 
 Example lesson request after `docker compose up --build`:
@@ -197,10 +198,10 @@ gh repo create <github-owner>/<repo-name> --public --source=. --remote=origin --
 ## Technical overview
 
 ```text
-Claude Code / Codex / chat LLM / later UI
+LibreChat teacher frontend
         |
         v
-teacher-tools API + Obsidian vault
+teacher-tools API/MCP + Claude-OS + Obsidian vault
         |
         +--> teacher-tools API
         |       - search_curriculum

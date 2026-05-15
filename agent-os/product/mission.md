@@ -10,10 +10,11 @@ The project keeps the normal teacher workflow small and practical:
 - The Obsidian-compatible vault is the teacher's durable workspace.
 - Claude-OS is the local runtime memory engine over privacy-checked vault wiki content.
 - `teacher_tools` provides local service and export behavior.
+- LibreChat is the v1 teacher frontend.
+- OpenRouter is the default cloud model route, with local BYOK support for
+  selected frontier providers.
 - Curriculum grounding happens before generated lesson content.
 - Markdown and DOCX exports come before UI complexity.
-- Teacher frontends stay interchangeable: Claude Code, Codex, a chat LLM, or a
-  later UI can use the same local stack.
 - Optional local AI support can be added without making it required.
 - Contributors can clone the repository, attach their preferred coding IDE or
   agent, run the documented checks, and start from public repo context.

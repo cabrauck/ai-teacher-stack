@@ -10,15 +10,16 @@ memory service over privacy-checked wiki notes in `vault/Wiki/`.
 
 ## What You Use For What
 
-- **Claude Code** or **Codex App**: primary working surface for planning,
-  writing, reviewing, and file-based workflows
-- **Claude-OS web UI**: admin, review, and status surface at
+- **LibreChat**: primary teacher frontend for planning, writing, previews, and
+  tool-assisted workflows at `http://localhost:3080`
+- **Claude-OS**: local memory runtime plus admin, review, and status surface at
   `http://localhost:8051`
 - **teacher-tools API**: local runtime API at `http://localhost:8010`
 - **Obsidian-compatible vault**: your durable local workspace under `vault/`
 
-The current pre-release is intentionally **agent-first**. The Claude-OS web UI
-is not the main teacher workspace for lesson planning.
+The current pre-release is intentionally **LibreChat-first**. Claude-OS is
+tightly connected behind the interface, but it is not the main teacher
+workspace for lesson planning.
 
 ## Requirements
 
@@ -29,10 +30,8 @@ is not the main teacher workspace for lesson planning.
 
 Optional but recommended:
 
-- Claude Code
-- Codex App
-
-See `docs/agent-client-setup.md` for agent-client configuration.
+- OpenRouter API key
+- BYOK keys for selected frontier providers if you want to use them directly
 
 ## Start
 
@@ -80,6 +79,7 @@ macOS / Linux shell:
 
 ## Local URLs
 
+- LibreChat teacher frontend: `http://localhost:3080`
 - Claude-OS admin and review UI: `http://localhost:8051`
 - Claude-OS health: `http://localhost:8051/health`
 - teacher-tools API: `http://localhost:8010`
@@ -88,6 +88,7 @@ macOS / Linux shell:
 The aggregated stack status endpoint reports local readiness for:
 
 - teacher-tools
+- LibreChat
 - Claude-OS reachability
 - vault structure
 - export structure
@@ -96,8 +97,8 @@ The aggregated stack status endpoint reports local readiness for:
 ## Typical First Steps
 
 1. Start the stack with the script for your platform.
-2. Open `http://localhost:8051` and confirm the Claude-OS surface is reachable.
-3. Open this folder in Claude Code or Codex App.
+2. Open `http://localhost:3080`.
+3. Add your OpenRouter key, or configure a BYOK provider in your local `.env`.
 4. Use `vault/Unterricht/`, `vault/Schriftwesen/`, and `exports/` as your local
    working folders.
 5. Save only privacy-checked long-term memory in `vault/Wiki/`.
@@ -152,6 +153,7 @@ curl -X POST http://localhost:8010/memory/wiki \
 ## Local Folders
 
 - `data/curriculum/`: structured curriculum sample data
+- `.librechat/`: local LibreChat app state, uploads, and logs
 - `vault/`: Obsidian-compatible local notes skeleton
 - `vault/Sources/`: curated raw memory notes
 - `vault/Wiki/`: privacy-checked long-term memory indexed by Claude-OS
@@ -165,7 +167,6 @@ Run `scripts/init-vault.sh` if you want to create starter vault notes.
 ## Further Reading
 
 - `docs/pre-release-guide.md`
-- `docs/agent-client-setup.md`
 - `docs/architecture.md`
 - `docs/privacy-boundary.md`
 

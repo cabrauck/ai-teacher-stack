@@ -26,15 +26,16 @@ def _path_matches_expected_type(path: Path) -> bool:
     return path.is_dir()
 
 
-def inspect_claude_os_service(
-    claude_os_url: str,
+def inspect_http_service(
+    service_url: str,
     *,
+    health_path: str = "/",
     timeout_seconds: float = 2.0,
 ) -> dict[str, Any]:
-    health_url = urljoin(claude_os_url.rstrip("/") + "/", "health")
+    health_url = urljoin(service_url.rstrip("/") + "/", health_path.lstrip("/"))
     result: dict[str, Any] = {
         "status": "error",
-        "url": claude_os_url,
+        "url": service_url,
         "health_url": health_url,
         "reachable": False,
     }
@@ -60,6 +61,30 @@ def inspect_claude_os_service(
         except json.JSONDecodeError:
             result["response_text"] = payload
     return result
+
+
+def inspect_claude_os_service(
+    claude_os_url: str,
+    *,
+    timeout_seconds: float = 2.0,
+) -> dict[str, Any]:
+    return inspect_http_service(
+        claude_os_url,
+        health_path="/health",
+        timeout_seconds=timeout_seconds,
+    )
+
+
+def inspect_librechat_service(
+    librechat_url: str,
+    *,
+    timeout_seconds: float = 2.0,
+) -> dict[str, Any]:
+    return inspect_http_service(
+        librechat_url,
+        health_path="/",
+        timeout_seconds=timeout_seconds,
+    )
 
 
 def inspect_vault_structure(vault_root: Path) -> dict[str, Any]:
@@ -139,9 +164,11 @@ def build_stack_status(
     vault_root: Path,
     export_root: Path,
     claude_os_url: str,
+    librechat_url: str,
 ) -> dict[str, Any]:
     teacher_tools = {"status": "ok"}
     claude_os = inspect_claude_os_service(claude_os_url)
+    librechat = inspect_librechat_service(librechat_url)
     vault = inspect_vault_structure(vault_root)
     exports = inspect_export_root(export_root)
     memory = inspect_memory_bootstrap(vault_root)
@@ -149,6 +176,7 @@ def build_stack_status(
     checks = {
         "teacher_tools": teacher_tools,
         "claude_os": claude_os,
+        "librechat": librechat,
         "vault": vault,
         "exports": exports,
         "memory": memory,
@@ -161,6 +189,7 @@ def build_stack_status(
         "services": {
             "teacher_tools": teacher_tools,
             "claude_os": claude_os,
+            "librechat": librechat,
         },
         "storage": {
             "vault": vault,
@@ -168,6 +197,7 @@ def build_stack_status(
             "memory": memory,
         },
         "urls": {
+            "librechat": "http://localhost:3080",
             "teacher_tools_api": "http://localhost:8010",
             "teacher_tools_status": "http://localhost:8010/status",
             "claude_os": "http://localhost:8051",

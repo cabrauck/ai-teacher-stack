@@ -31,6 +31,14 @@ if ($null -eq $status) {
 }
 
 Write-Host ""
+$librechat = Try-Json -Url "http://localhost:3080"
+if ($null -eq $librechat) {
+    Write-Step "LibreChat teacher frontend is not reachable"
+} else {
+    Write-Step "LibreChat teacher frontend is reachable at http://localhost:3080"
+}
+
+Write-Host ""
 $claudeHealth = Try-Json -Url "http://localhost:8051/health"
 if ($null -eq $claudeHealth) {
     Write-Step "Claude-OS health endpoint is not reachable"

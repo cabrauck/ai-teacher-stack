@@ -1,7 +1,8 @@
 # Roadmap
 
-Agent-OS stays the repo-only developer/specification gate. Claude-OS is the core
-runtime memory service. Obsidian is the visible long-term memory surface.
+Agent-OS stays the repo-only developer/specification gate. LibreChat is the v1
+teacher frontend. Claude-OS is the core runtime memory service. Obsidian is the
+visible long-term memory surface.
 
 The repository should remain contributor-ready: a contributor can clone it,
 connect a coding IDE or agent, create `.env`, run checks, and start from public
@@ -22,6 +23,8 @@ Agent-OS remains the decision and specification layer for larger changes.
 - Schriftwesen and handover are implemented, tested, and privacy-gated.
 - Contributor onboarding and repo policy are maintained through
   `CONTRIBUTING.md`, `docs/contributor-setup.md`, and Agent-OS standards.
+- LibreChat is the selected v1 teacher frontend; alternative chat frontends are
+  not tracked as product backlog.
 - Open roadmap items are imported into GitHub Project `ai-teacher-stack
   Roadmap` as Issues.
 - LehrplanPLUS ingestion is specified as `Ready`, but not implemented.
@@ -38,7 +41,18 @@ Agent-OS remains the decision and specification layer for larger changes.
 - Keep `vault/Wiki/index.md` and `vault/Wiki/log.md` as navigation and audit files.
 - Treat Claude-OS as the local memory engine over `vault/Wiki/`, not as an
   optional later bridge.
-- Keep teacher frontends interchangeable: Claude Code, Codex, chat LLM, or later UI.
+- Keep Claude-OS as the core memory service behind the LibreChat v1 frontend.
+
+## v0.2.5 LibreChat v1 Frontend
+
+- Add LibreChat as the default teacher frontend in Docker Compose.
+- Use OpenRouter as the default model route with local BYOK options for selected
+  frontier providers.
+- Connect LibreChat tightly to Claude-OS and teacher-tools through MCP.
+- Keep LibreChat RAG, vector DB, and search infrastructure out of the default
+  stack when Claude-OS already provides the memory/knowledge path.
+- Keep Claude Code, Codex App, and other coding-agent clients out of the product
+  frontend backlog.
 
 ## v0.3 LehrplanPLUS Ingestion
 
@@ -81,6 +95,17 @@ Agent-OS remains the decision and specification layer for larger changes.
 - Consider explicit export adapters for BYCS or OneDrive.
 - Keep adapters disabled by default and avoid autopublishing.
 - Do not store credentials or school-internal confidential documents in the repository.
+
+## Backlog Decisions
+
+- Evaluate Open Design as a teacher-facing branding/material design tool for
+  consistent worksheets, plans, board prompts, and export templates.
+- Decide later whether Open Design also supports v2 development work around the
+  Vercel AI SDK custom frontend.
+- Add browser preview for DOCX/PDF/ODT after the LibreChat v1 workflow is
+  stable.
+- Build the v2 custom frontend with Vercel AI SDK after the teacher-tools,
+  Claude-OS, MCP, and preview seams are stable.
 
 ## Out of Scope
 

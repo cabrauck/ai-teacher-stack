@@ -12,8 +12,9 @@ The stack should stay small and practical:
 - Local files and Obsidian vault as the primary state.
 - Claude-OS is the core local long-term-memory runtime over privacy-checked
   Obsidian wiki content.
-- The teacher frontend is client-agnostic: Claude Code, Codex, a chat LLM, or a
-  later UI can use the same local stack.
+- LibreChat is the v1 teacher frontend.
+- Claude Code, Codex, and other coding agents are contributor tools, not
+  teacher product frontends or release targets.
 - Teacher-only workflows in v1.
 - No sensitive student data in default features.
 - Curriculum grounding before generative output.
@@ -61,8 +62,8 @@ uv run uvicorn teacher_tools.api:app --reload --port 8010
 
 Agent-OS is the developer specification layer for larger changes. It is not a
 runtime feature and must stay out of user release packages.
-Agent-OS is not the teacher frontend and not the runtime memory layer; Claude-OS
-fills the runtime memory role.
+Agent-OS is not the teacher frontend and not the runtime memory layer; LibreChat
+fills the v1 teacher frontend role and Claude-OS fills the runtime memory role.
 
 Use Agent-OS for new features, cross-module changes, release-boundary changes,
 or anything that affects curriculum grounding, exports, vault structure, or
