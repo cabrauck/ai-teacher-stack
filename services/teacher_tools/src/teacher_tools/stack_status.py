@@ -26,6 +26,13 @@ def _path_matches_expected_type(path: Path) -> bool:
     return path.is_dir()
 
 
+def _public_url(host: str, port: int, path: str = "") -> str:
+    base = f"http://{host}:{port}"
+    if not path:
+        return base
+    return f"{base}/{path.lstrip('/')}"
+
+
 def inspect_http_service(
     service_url: str,
     *,
@@ -165,6 +172,10 @@ def build_stack_status(
     export_root: Path,
     claude_os_url: str,
     librechat_url: str,
+    public_host: str,
+    host_librechat_port: int,
+    host_teacher_tools_port: int,
+    host_claude_os_port: int,
 ) -> dict[str, Any]:
     teacher_tools = {"status": "ok"}
     claude_os = inspect_claude_os_service(claude_os_url)
@@ -197,9 +208,9 @@ def build_stack_status(
             "memory": memory,
         },
         "urls": {
-            "librechat": "http://localhost:3080",
-            "teacher_tools_api": "http://localhost:8010",
-            "teacher_tools_status": "http://localhost:8010/status",
-            "claude_os": "http://localhost:8051",
+            "librechat": _public_url(public_host, host_librechat_port),
+            "teacher_tools_api": _public_url(public_host, host_teacher_tools_port),
+            "teacher_tools_status": _public_url(public_host, host_teacher_tools_port, "/status"),
+            "claude_os": _public_url(public_host, host_claude_os_port),
         },
     }

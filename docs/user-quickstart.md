@@ -41,7 +41,14 @@ Optional but recommended:
 .\scripts\start-pre-release.ps1
 ```
 
-Open the Claude-OS web UI automatically:
+If Windows blocks the downloaded PowerShell scripts, either unblock them in
+file properties or start once with:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-pre-release.ps1
+```
+
+Open LibreChat automatically:
 
 ```powershell
 .\scripts\start-pre-release.ps1 -OpenBrowser
@@ -53,13 +60,16 @@ Open the Claude-OS web UI automatically:
 ./scripts/start-pre-release.sh
 ```
 
-Open the Claude-OS web UI automatically:
+Open LibreChat automatically:
 
 ```bash
 ./scripts/start-pre-release.sh --open-browser
 ```
 
 If `.env` does not exist yet, the start script creates it from `.env.example`.
+If the default local ports `3080`, `8010`, or `8051` are already in use, the
+start script selects the next free host ports, updates `.env`, and prints the
+actual URLs.
 
 ## Check and Stop
 
@@ -84,6 +94,10 @@ macOS / Linux shell:
 - Claude-OS health: `http://localhost:8051/health`
 - teacher-tools API: `http://localhost:8010`
 - Aggregated stack status: `http://localhost:8010/status`
+
+These are the default URLs. If the start script had to move the stack to other
+host ports, use the URLs printed by the script or the `HOST_*_PORT` values in
+your local `.env`.
 
 The aggregated stack status endpoint reports local readiness for:
 

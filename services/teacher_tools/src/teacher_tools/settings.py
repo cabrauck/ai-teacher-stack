@@ -5,6 +5,10 @@ from pydantic import BaseModel
 
 
 class Settings(BaseModel):
+    stack_public_host: str = os.getenv("STACK_PUBLIC_HOST", "localhost")
+    host_librechat_port: int = int(os.getenv("HOST_LIBRECHAT_PORT", "3080"))
+    host_teacher_tools_port: int = int(os.getenv("HOST_TEACHER_TOOLS_PORT", "8010"))
+    host_claude_os_port: int = int(os.getenv("HOST_CLAUDE_OS_PORT", "8051"))
     curriculum_root: Path = Path(os.getenv("CURRICULUM_ROOT", "/app/data/curriculum"))
     vault_root: Path = Path(os.getenv("VAULT_ROOT", "/app/vault"))
     export_root: Path = Path(os.getenv("EXPORT_ROOT", "/app/exports"))

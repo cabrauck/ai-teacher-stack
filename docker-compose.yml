@@ -6,11 +6,13 @@ services:
     environment:
       HOST: 0.0.0.0
       PORT: 3080
+      DOMAIN_CLIENT: ${DOMAIN_CLIENT:-http://localhost:3080}
+      DOMAIN_SERVER: ${DOMAIN_SERVER:-http://localhost:3080}
       CONFIG_PATH: /app/librechat.yaml
       MONGO_URI: mongodb://librechat-mongodb:27017/LibreChat
       SEARCH: "false"
     ports:
-      - "3080:3080"
+      - "${HOST_LIBRECHAT_PORT:-3080}:3080"
     volumes:
       - ./.env:/app/.env
       - ./integrations/librechat/librechat.yaml:/app/librechat.yaml:ro
@@ -38,7 +40,7 @@ services:
       LIBRECHAT_URL: http://librechat:3080
       MEMORY_REQUIRE_PRIVACY_VALIDATION: "true"
     ports:
-      - "8010:8010"
+      - "${HOST_TEACHER_TOOLS_PORT:-8010}:8010"
     volumes:
       - ./data:/app/data
       - ./vault:/app/vault
@@ -96,9 +98,9 @@ services:
       CLAUDE_OS_WIKI_PATH: /workspace/vault/Wiki
       CLAUDE_OS_WIKI_KB_NAME: ${CLAUDE_OS_WIKI_KB_NAME:-ai-teacher-stack-wiki}
       CLAUDE_OS_WIKI_MCP_TYPE: ${CLAUDE_OS_WIKI_MCP_TYPE:-project_memories}
-      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:8051,http://localhost:8010,http://127.0.0.1:5173,http://127.0.0.1:8051,http://127.0.0.1:8010
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3080,http://localhost:8051,http://localhost:8010,http://127.0.0.1:3080,http://127.0.0.1:8051,http://127.0.0.1:8010}
     ports:
-      - "8051:8051"
+      - "${HOST_CLAUDE_OS_PORT:-8051}:8051"
     volumes:
       - ./vault:/workspace/vault
       - ./.claude-os:/workspace/.claude-os

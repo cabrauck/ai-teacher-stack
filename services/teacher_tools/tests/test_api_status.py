@@ -56,6 +56,8 @@ def test_status_api_reports_ready_stack(tmp_path: Path, monkeypatch):
     assert payload["services"]["claude_os"]["status"] == "ok"
     assert payload["services"]["librechat"]["status"] == "ok"
     assert payload["storage"]["exports"]["is_empty"] is True
+    assert payload["urls"]["librechat"] == "http://localhost:3080"
+    assert payload["urls"]["teacher_tools_status"] == "http://localhost:8010/status"
 
 
 def test_status_api_reports_unreachable_claude_os(tmp_path: Path, monkeypatch):
@@ -216,3 +218,48 @@ def test_status_api_reports_missing_export_root(tmp_path: Path, monkeypatch):
     payload = response.json()
     assert payload["storage"]["exports"]["status"] == "error"
     assert payload["storage"]["exports"]["exists"] is False
+
+
+def test_status_api_reports_configured_public_urls(tmp_path: Path, monkeypatch):
+    vault_root = tmp_path / "vault"
+    export_root = tmp_path / "exports"
+    _bootstrap_vault(vault_root)
+    export_root.mkdir()
+    monkeypatch.setattr(api.settings, "vault_root", vault_root)
+    monkeypatch.setattr(api.settings, "export_root", export_root)
+    monkeypatch.setattr(api.settings, "stack_public_host", "127.0.0.1")
+    monkeypatch.setattr(api.settings, "host_librechat_port", 3180)
+    monkeypatch.setattr(api.settings, "host_teacher_tools_port", 8110)
+    monkeypatch.setattr(api.settings, "host_claude_os_port", 8151)
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_claude_os_service",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "url": "http://claude-os:8051",
+            "health_url": "http://claude-os:8051/health",
+            "reachable": True,
+            "http_status": 200,
+        },
+    )
+    monkeypatch.setattr(
+        stack_status,
+        "inspect_librechat_service",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "url": "http://librechat:3080",
+            "health_url": "http://librechat:3080/",
+            "reachable": True,
+            "http_status": 200,
+        },
+    )
+    client = TestClient(api.app)
+
+    response = client.get("/status")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["urls"]["librechat"] == "http://127.0.0.1:3180"
+    assert payload["urls"]["teacher_tools_api"] == "http://127.0.0.1:8110"
+    assert payload["urls"]["teacher_tools_status"] == "http://127.0.0.1:8110/status"
+    assert payload["urls"]["claude_os"] == "http://127.0.0.1:8151"

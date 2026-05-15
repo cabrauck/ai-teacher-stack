@@ -8,9 +8,13 @@ Status: Done
 - [x] Add an aggregated `teacher_tools` stack status endpoint.
 - [x] Add guided start, stop, and readiness scripts for Windows and POSIX
   shells.
+- [x] Let the pre-release start scripts move occupied default host ports to the
+  next free local ports and keep derived runtime URLs in sync.
 - [x] Update the release package allowlist and required runtime files.
 - [x] Add teacher-facing pre-release and agent-client documentation with
   runtime-safe snippets.
+- [x] Add Windows PowerShell unblock and per-command ExecutionPolicy bypass
+  guidance to user-facing pre-release docs and GitHub Release notes.
 
 ## Verification
 

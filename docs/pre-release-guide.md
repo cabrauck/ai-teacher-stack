@@ -75,7 +75,11 @@ If the start script fails:
 
 - run the matching `check-pre-release` script
 - verify Docker Desktop is running
-- verify ports `3080`, `8010`, and `8051` are free
+- if Windows blocks PowerShell scripts from the downloaded ZIP, unblock the
+  `.ps1` files in file properties or run them once with
+  `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-pre-release.ps1`
+- note that the start script can move default host ports `3080`, `8010`, and
+  `8051` to the next free local ports and stores the chosen values in `.env`
 - open `http://localhost:3080`
 - open `http://localhost:8010/status`
 - open `http://localhost:8051/health`

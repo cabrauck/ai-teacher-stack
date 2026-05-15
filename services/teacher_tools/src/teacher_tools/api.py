@@ -109,6 +109,10 @@ def stack_status():
         export_root=settings.export_root,
         claude_os_url=settings.claude_os_url,
         librechat_url=settings.librechat_url,
+        public_host=settings.stack_public_host,
+        host_librechat_port=settings.host_librechat_port,
+        host_teacher_tools_port=settings.host_teacher_tools_port,
+        host_claude_os_port=settings.host_claude_os_port,
     )
 
 

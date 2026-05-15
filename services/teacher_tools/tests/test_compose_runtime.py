@@ -6,15 +6,18 @@ from pathlib import Path
 def test_default_compose_includes_core_claude_os_services():
     repo_root = Path(__file__).resolve().parents[3]
     compose = (repo_root / "docker-compose.yml").read_text(encoding="utf-8")
+    env_example = (repo_root / ".env.example").read_text(encoding="utf-8")
 
     assert "  claude-os:" in compose
     assert "  claude-os-redis:" in compose
-    assert "8051:8051" in compose
+    assert '${HOST_CLAUDE_OS_PORT:-8051}:8051' in compose
     assert "./vault:/workspace/vault" in compose
     assert "./.claude-os:/workspace/.claude-os" in compose
     assert "ee7b62bc5bf36541018a1c14592bcac2b59022f9" in compose
     assert "CLAUDE_OS_BOOTSTRAP_WIKI_KB" in compose
     assert "CLAUDE_OS_WIKI_PATH: /workspace/vault/Wiki" in compose
+    assert "HOST_CLAUDE_OS_PORT=8051" in env_example
+    assert "ALLOWED_ORIGINS=http://localhost:3080" in env_example
 
 
 def test_claude_os_wrapper_bootstraps_wiki_knowledge_base():
@@ -40,6 +43,7 @@ def test_claude_os_wrapper_bootstraps_wiki_knowledge_base():
 def test_default_compose_includes_librechat_teacher_frontend_without_duplicate_rag():
     repo_root = Path(__file__).resolve().parents[3]
     compose = (repo_root / "docker-compose.yml").read_text(encoding="utf-8")
+    env_example = (repo_root / ".env.example").read_text(encoding="utf-8")
     librechat_config = (repo_root / "integrations/librechat/librechat.yaml").read_text(
         encoding="utf-8"
     )
@@ -47,7 +51,8 @@ def test_default_compose_includes_librechat_teacher_frontend_without_duplicate_r
     assert "  librechat:" in compose
     assert "  librechat-mongodb:" in compose
     assert "  teacher-tools-mcp:" in compose
-    assert "3080:3080" in compose
+    assert '${HOST_LIBRECHAT_PORT:-3080}:3080' in compose
+    assert '${HOST_TEACHER_TOOLS_PORT:-8010}:8010' in compose
     assert "teacher-tools-mcp:8020" in librechat_config
     assert "claude-os:8051" in librechat_config
     assert "OpenRouter" in librechat_config
@@ -56,3 +61,5 @@ def test_default_compose_includes_librechat_teacher_frontend_without_duplicate_r
     assert "librechat-vectordb" not in compose
     assert "librechat-meilisearch" not in compose
     assert 'SEARCH: "false"' in compose
+    assert "HOST_LIBRECHAT_PORT=3080" in env_example
+    assert "HOST_TEACHER_TOOLS_PORT=8010" in env_example

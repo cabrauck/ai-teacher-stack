@@ -45,6 +45,12 @@ jobs:
           - Windows PowerShell: `.\scripts\start-pre-release.ps1`
           - macOS / Linux shell: `./scripts/start-pre-release.sh`
 
+          If Windows blocks the downloaded PowerShell scripts, either unblock the `.ps1` file in Properties or run:
+
+          - `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-pre-release.ps1`
+
+          If default host ports `3080`, `8010`, or `8051` are already in use, the start script automatically moves the stack to the next free local ports and prints the actual URLs.
+
           Keep student names, grades, diagnoses, parent communication, credentials, private school documents, and copyrighted textbook content out of the package and public repository.
 
           Developers should clone the repository directly instead of using this runtime package.

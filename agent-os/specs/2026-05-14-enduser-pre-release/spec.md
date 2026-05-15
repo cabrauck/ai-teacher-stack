@@ -24,6 +24,9 @@ from its role as the core local memory runtime.
 
 - The user release package includes guided start, stop, and readiness helper
   scripts for Windows and macOS/Linux shells.
+- The start helpers keep the release package usable even when default local
+  host ports are occupied by selecting fallback host ports and keeping printed
+  URLs aligned with the chosen values.
 - `teacher_tools` exposes an aggregated stack status endpoint that reports local
   runtime readiness for the teacher-tools API, Claude-OS reachability, vault
   structure, export structure, and memory bootstrap basics.
@@ -33,6 +36,8 @@ from its role as the core local memory runtime.
 
 - The release package includes teacher-facing pre-release documentation.
 - The release package includes LibreChat-first setup guidance.
+- The release docs and GitHub Release notes include a Windows PowerShell
+  unblock or per-command ExecutionPolicy bypass path for downloaded scripts.
 - Repo-only agent files such as `AGENTS.md` and `CLAUDE.md` remain excluded from
   user packages.
 
@@ -47,11 +52,12 @@ from its role as the core local memory runtime.
 ## Acceptance Criteria
 
 - User-facing helper scripts can check prerequisites, ensure `.env` exists,
-  start and stop the stack, wait for local readiness, and print the relevant
-  local URLs.
+  start and stop the stack, wait for local readiness, choose usable host ports
+  when defaults are occupied, and print the relevant local URLs.
 - `teacher_tools` exposes an aggregated stack status endpoint suitable for
   helper scripts and user diagnostics.
 - The release package includes user docs and LibreChat setup guidance while
-  keeping dev-only agent files out of the package.
+  keeping dev-only agent files out of the package and documenting Windows
+  PowerShell unblock or bypass options for downloaded scripts.
 - Tests cover healthy and degraded status responses, updated release boundaries,
   and the presence of new runtime helper files.
