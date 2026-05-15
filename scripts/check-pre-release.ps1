@@ -56,6 +56,7 @@ $publicHost = Get-EnvValue -Key "STACK_PUBLIC_HOST" -Default "localhost"
 $libreChatUrl = "http://${publicHost}:$(Get-EnvPort -Key "HOST_LIBRECHAT_PORT" -Default 3080)"
 $teacherToolsStatusUrl = "http://${publicHost}:$(Get-EnvPort -Key "HOST_TEACHER_TOOLS_PORT" -Default 8010)/status"
 $claudeHealthUrl = "http://${publicHost}:$(Get-EnvPort -Key "HOST_CLAUDE_OS_PORT" -Default 8051)/health"
+$claudeUiUrl = "http://${publicHost}:$(Get-EnvPort -Key "HOST_CLAUDE_OS_FRONTEND_PORT" -Default 5173)"
 
 Write-Step "Docker services"
 docker compose ps | Out-Host
@@ -75,6 +76,19 @@ if ($null -eq $librechat) {
     Write-Step "LibreChat teacher frontend is not reachable"
 } else {
     Write-Step "LibreChat teacher frontend is reachable at $libreChatUrl"
+}
+
+Write-Host ""
+$claudeUi = $null
+try {
+    $claudeUi = Invoke-WebRequest -Uri $claudeUiUrl -Method Get -TimeoutSec 3 -UseBasicParsing
+} catch {
+    $claudeUi = $null
+}
+if ($null -eq $claudeUi) {
+    Write-Step "Claude-OS UI is not reachable"
+} else {
+    Write-Step "Claude-OS UI is reachable at $claudeUiUrl"
 }
 
 Write-Host ""

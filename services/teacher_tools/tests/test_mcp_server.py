@@ -80,6 +80,23 @@ def test_mcp_lists_and_reads_memory_wiki_pages(tmp_path: Path, monkeypatch):
     assert "Partnerarbeit" in page["markdown"]
 
 
+def test_mcp_returns_memory_schema_and_lint(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(mcp_server.settings, "vault_root", tmp_path)
+    mcp_server.write_memory_wiki_page(
+        title="Kartenarbeit Routinen",
+        body="Bewaehrte Struktur mit [[legendenarbeit]].",
+        source_path=None,
+    )
+
+    schema = mcp_server.get_memory_wiki_schema()
+    lint = mcp_server.lint_memory_wiki_pages()
+
+    assert "Karpathy-style" in schema["markdown"]
+    assert lint["page_count"] == 1
+    assert lint["status"] == "degraded"
+    assert lint["warning_count"] == 1
+
+
 def test_mcp_blocks_memory_reads_outside_wiki(tmp_path: Path, monkeypatch):
     source_root = tmp_path / "Sources"
     source_root.mkdir(parents=True)
@@ -104,3 +121,38 @@ def test_mcp_lists_exported_documents(tmp_path: Path, monkeypatch):
     assert result["documents"][0]["type"] == "package"
     assert result["documents"][1]["filename"] == "lesson.docx"
     assert result["documents"][1]["type"] == "docx"
+
+
+def test_mcp_reports_claude_os_memory_status(monkeypatch):
+    monkeypatch.setattr(
+        mcp_server,
+        "inspect_claude_os_runtime",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "wiki_kb_name": "ai-teacher-stack-wiki",
+            "document_count": 2,
+            "embedding_coverage": {"status": "ok"},
+        },
+    )
+
+    result = mcp_server.get_claude_os_memory_status()
+
+    assert result["status"] == "ok"
+    assert result["document_count"] == 2
+
+
+def test_mcp_searches_claude_os_memory_with_source_citation(monkeypatch):
+    monkeypatch.setattr(
+        mcp_server,
+        "search_claude_os_memory",
+        lambda *_args, **_kwargs: {
+            "status": "ok",
+            "answer": "Nutze Kartenlegenden.",
+            "sources": [{"path": "Wiki/kartenarbeit.md"}],
+        },
+    )
+
+    result = mcp_server.search_claude_os_wiki_memory("Kartenarbeit")
+
+    assert result["status"] == "ok"
+    assert result["sources"][0]["path"] == "Wiki/kartenarbeit.md"

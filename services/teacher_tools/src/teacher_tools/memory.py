@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from teacher_tools.privacy import (
+    PrivacyError,
     PrivacyValidationResult,
     assert_no_personal_data,
 )
@@ -20,6 +21,40 @@ TEACHER_MEMORY_NOTE = (
     "Hinweis: Diese Long-Term-Memory-Notiz ist ein lokal gespeicherter Entwurf. "
     "Vor Wiederverwendung fachlich, didaktisch und datenschutzrechtlich pruefen."
 )
+
+TEACHER_MEMORY_SCHEMA = """# Teacher Memory Wiki Schema
+
+This wiki follows the Karpathy-style LLM wiki pattern: raw sources stay in
+`vault/Sources/`, durable synthesis lives in `vault/Wiki/`, and every useful
+answer should improve the wiki only after teacher review.
+
+## Page Frontmatter
+
+```yaml
+---
+type: memory_wiki
+title: Kartenarbeit Routinen
+slug: kartenarbeit-routinen
+updated_at: 2026-05-15T12:00:00+00:00
+privacy_status: no_personal_data_detected
+source: Sources/2026-05-15_kartenarbeit.md
+tags:
+  - hsu
+  - planung
+---
+```
+
+## Rules
+
+- `vault/Sources/` contains curated raw inputs and is not indexed by default.
+- `vault/Wiki/` contains privacy-checked synthesis and is the Claude-OS index root.
+- Every wiki page needs a title, frontmatter, privacy status, and local path citation.
+- Cross-link related wiki pages with Obsidian links such as `[[kartenarbeit-routinen]]`.
+- `Wiki/index.md` is generated from wiki pages and should not be hand-curated.
+- `Wiki/log.md` records writes and promotions for auditability.
+- Never store student names, grades, diagnoses, parent communication, credentials,
+  health data, or confidential school documents in the wiki.
+"""
 
 _TRANSLATION_TABLE = str.maketrans(
     {
@@ -254,6 +289,7 @@ def create_source_note(
     path = vault_root / SOURCES_DIR / f"{note_date.isoformat()}_{slug}.md"
     frontmatter = _frontmatter(
         {
+            **(metadata or {}),
             "type": "memory_source",
             "title": title,
             "slug": slug,
@@ -262,7 +298,6 @@ def create_source_note(
             "privacy_status": validation.privacy_status,
             "promoted": False,
             "tags": tags or [],
-            **(metadata or {}),
         }
     )
     markdown = f"{frontmatter}# {title}\n\n{TEACHER_MEMORY_NOTE}\n\n{body.strip()}\n"
@@ -307,6 +342,7 @@ def write_wiki_page(
     stamp = (updated_at or _now()).astimezone(UTC).replace(microsecond=0)
     frontmatter = _frontmatter(
         {
+            **(metadata or {}),
             "type": "memory_wiki",
             "title": title,
             "slug": slug,
@@ -314,7 +350,6 @@ def write_wiki_page(
             "privacy_status": validation.privacy_status,
             "source": source_relative,
             "tags": tags or [],
-            **(metadata or {}),
         }
     )
     markdown = f"{frontmatter}# {title}\n\n{TEACHER_MEMORY_NOTE}\n\n{body.strip()}\n"
@@ -395,6 +430,119 @@ def memory_health(vault_root: Path) -> dict[str, Any]:
         "wiki_pages": len(wiki_pages),
         "index_path": _relative_to_vault(vault_root, vault_root / WIKI_DIR / WIKI_INDEX),
         "log_path": _relative_to_vault(vault_root, vault_root / WIKI_DIR / WIKI_LOG),
+    }
+
+
+def memory_schema_markdown() -> str:
+    return TEACHER_MEMORY_SCHEMA
+
+
+def lint_memory_wiki(vault_root: Path) -> dict[str, Any]:
+    ensure_memory_layout(vault_root)
+    index_path = update_memory_index(vault_root)
+    log_path = vault_root / WIKI_DIR / WIKI_LOG
+    wiki_root = vault_root / WIKI_DIR
+    pages = sorted(
+        path
+        for path in wiki_root.glob("*.md")
+        if path.name not in {WIKI_INDEX, WIKI_LOG}
+    )
+    index = index_path.read_text(encoding="utf-8") if index_path.exists() else ""
+    issues: list[dict[str, str]] = []
+
+    if not log_path.is_file():
+        issues.append(
+            {
+                "severity": "error",
+                "path": _relative_to_vault(vault_root, log_path),
+                "code": "missing_log",
+                "message": "Wiki/log.md is missing.",
+            }
+        )
+
+    for page in pages:
+        relative = _relative_to_vault(vault_root, page)
+        markdown = page.read_text(encoding="utf-8")
+        frontmatter = _parse_frontmatter(markdown)
+        if frontmatter.get("type") != "memory_wiki":
+            issues.append(
+                {
+                    "severity": "error",
+                    "path": relative,
+                    "code": "invalid_type",
+                    "message": "Wiki page frontmatter must include type: memory_wiki.",
+                }
+            )
+        if frontmatter.get("privacy_status") != "no_personal_data_detected":
+            issues.append(
+                {
+                    "severity": "error",
+                    "path": relative,
+                    "code": "privacy_status_missing",
+                    "message": "Wiki page must keep privacy_status: no_personal_data_detected.",
+                }
+            )
+        if not any(line.startswith("# ") for line in markdown.splitlines()):
+            issues.append(
+                {
+                    "severity": "warning",
+                    "path": relative,
+                    "code": "missing_h1",
+                    "message": "Wiki page should have a level-1 title.",
+                }
+            )
+        if page.stem not in index:
+            issues.append(
+                {
+                    "severity": "warning",
+                    "path": relative,
+                    "code": "missing_index_link",
+                    "message": "Wiki page is not referenced by Wiki/index.md.",
+                }
+            )
+        if len(pages) > 1 and "[[" not in markdown:
+            issues.append(
+                {
+                    "severity": "warning",
+                    "path": relative,
+                    "code": "missing_cross_link",
+                    "message": "Wiki page has no Obsidian cross-link to related memory.",
+                }
+            )
+        if not frontmatter.get("source") and not frontmatter.get("promoted_from"):
+            issues.append(
+                {
+                    "severity": "warning",
+                    "path": relative,
+                    "code": "missing_source_reference",
+                    "message": "Wiki page should cite a local source or promotion path.",
+                }
+            )
+        try:
+            assert_no_personal_data(
+                {"path": relative, "markdown": markdown},
+                context="memory wiki lint",
+            )
+        except PrivacyError as exc:
+            issues.append(
+                {
+                    "severity": "error",
+                    "path": relative,
+                    "code": "privacy_violation",
+                    "message": str(exc),
+                }
+            )
+
+    error_count = sum(1 for issue in issues if issue["severity"] == "error")
+    warning_count = sum(1 for issue in issues if issue["severity"] == "warning")
+    return {
+        "status": "error" if error_count else ("degraded" if warning_count else "ok"),
+        "page_count": len(pages),
+        "issue_count": len(issues),
+        "error_count": error_count,
+        "warning_count": warning_count,
+        "issues": issues,
+        "schema": "Karpathy-style Obsidian wiki over privacy-checked vault/Wiki synthesis.",
     }
 
 

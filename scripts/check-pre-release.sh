@@ -43,6 +43,7 @@ public_host="$(get_env_value "STACK_PUBLIC_HOST" "localhost")"
 librechat_url="http://${public_host}:$(get_env_port "HOST_LIBRECHAT_PORT" "3080")"
 teacher_tools_status_url="http://${public_host}:$(get_env_port "HOST_TEACHER_TOOLS_PORT" "8010")/status"
 claude_os_health_url="http://${public_host}:$(get_env_port "HOST_CLAUDE_OS_PORT" "8051")/health"
+claude_os_frontend_url="http://${public_host}:$(get_env_port "HOST_CLAUDE_OS_FRONTEND_PORT" "5173")"
 
 log "Docker services"
 docker compose ps
@@ -60,6 +61,13 @@ if curl -fsS "${librechat_url}" >/dev/null 2>&1; then
   log "LibreChat teacher frontend is reachable at ${librechat_url}"
 else
   log "LibreChat teacher frontend is not reachable"
+fi
+
+printf '\n'
+if curl -fsS "${claude_os_frontend_url}" >/dev/null 2>&1; then
+  log "Claude-OS UI is reachable at ${claude_os_frontend_url}"
+else
+  log "Claude-OS UI is not reachable"
 fi
 
 printf '\n'

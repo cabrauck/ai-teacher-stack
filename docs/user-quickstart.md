@@ -12,6 +12,8 @@ memory service over privacy-checked wiki notes in `vault/Wiki/`.
 
 - **LibreChat**: primary teacher frontend for planning, writing, previews, and
   tool-assisted workflows at `http://localhost:3080`
+- **Claude-OS UI**: local memory, project, service, and RAG review surface at
+  `http://localhost:5173`
 - **Claude-OS API/MCP**: local memory runtime integration at
   `http://localhost:8051`; use `/health` for status and `/docs` for the
   technical API surface
@@ -68,9 +70,9 @@ Open LibreChat automatically:
 ```
 
 If `.env` does not exist yet, the start script creates it from `.env.example`.
-If the default local ports `3080`, `8010`, or `8051` are already in use, the
-start script selects the next free host ports, updates `.env`, and prints the
-actual URLs.
+If the default local ports `3080`, `8010`, `8051`, or `5173` are already in
+use, the start script selects the next free host ports, updates `.env`, and
+prints the actual URLs.
 
 ## Check and Stop
 
@@ -91,6 +93,7 @@ macOS / Linux shell:
 ## Local URLs
 
 - LibreChat teacher frontend: `http://localhost:3080`
+- Claude-OS UI: `http://localhost:5173`
 - Claude-OS API/MCP: `http://localhost:8051`
 - Claude-OS health: `http://localhost:8051/health`
 - Claude-OS API docs: `http://localhost:8051/docs`
@@ -105,15 +108,17 @@ The aggregated stack status endpoint reports local readiness for:
 
 - teacher-tools
 - LibreChat
-- Claude-OS reachability
+- Claude-OS API reachability
+- Claude-OS UI reachability
+- Claude-OS project, wiki KB, hook, document, job, and service state
+- Ollama reachability and required local model availability
 - vault structure
 - export structure
 - memory bootstrap basics
 
-The current pre-release does not expose the upstream Claude-OS React UI yet.
-If you open `http://localhost:8051/` directly and see `405 Method Not Allowed`,
-the API service is running but the UI service is not part of this release
-runtime yet.
+Open `http://localhost:5173` for the Claude-OS UI. If you open
+`http://localhost:8051/` directly and see `405 Method Not Allowed`, that is the
+API/MCP service, not the UI.
 
 ## Typical First Steps
 
@@ -142,9 +147,23 @@ Welche exportierten Dokumente liegen lokal vor?
 ```
 
 These tools read local `vault/Wiki/` memories and `exports/` files through
-teacher-tools. Claude-OS-backed document counts, embedding coverage, and
-vector/hybrid/rerank search visibility are planned in the Claude-OS full runtime
-integration milestone.
+teacher-tools. Claude-OS-backed document counts, embedding coverage, explicit
+sync, and vector/hybrid/rerank search visibility are exposed through the
+teacher-tools Claude-OS status and search tools. If Ollama or the configured
+embedding model is missing, LibreChat should report the degraded local-memory
+capability instead of pretending vector search is active.
+
+```text
+Was weiss Claude-OS ueber den lokalen Memory-Index?
+```
+
+```text
+Synchronisiere vault/Wiki mit Claude-OS und zeig mir das Ergebnis.
+```
+
+```text
+Suche in der lokalen Claude-OS-Erinnerung nach Kartenarbeit und nenne Quellen.
+```
 
 ## Example Checks
 

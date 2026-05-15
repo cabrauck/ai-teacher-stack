@@ -10,6 +10,7 @@ This repository is a local workstation stack for teacher material planning.
 - LibreChat teacher frontend in `librechat`
 - LibreChat MongoDB application-state service in `librechat-mongodb`
 - Claude-OS core memory runtime in `claude-os` Docker service
+- Claude-OS React/Vite management UI in `claude-os-frontend`
 - Claude-OS Redis queue/cache service in `claude-os-redis`
 - Structured curriculum data in `data/curriculum/`
 - Local Python service in `services/teacher_tools/`
@@ -29,19 +30,20 @@ Desktop and on Windows through Docker Desktop with the WSL2 backend:
 ```
 
 LibreChat listens on port `3080`. The local teacher-tools API listens on port
-`8010`. Claude-OS API/MCP listens on port `8051` and stores local runtime state
-under `.claude-os/`.
+`8010`. Claude-OS API/MCP listens on port `8051`. Claude-OS UI listens on port
+`5173`. Claude-OS stores local runtime state under `.claude-os/`.
 
 The current pre-release keeps the teacher surface LibreChat-first:
 
 - LibreChat on `http://localhost:3080` for normal teacher work
+- Claude-OS UI on `http://localhost:5173` for project, service, KB, and RAG
+  review
 - Claude-OS API/MCP on `http://localhost:8051` for memory runtime integration
 - `GET /status` on `teacher-tools` as the aggregated runtime readiness check
 
-The upstream Claude-OS repository also contains a React/Vite management UI.
-That UI is not yet exposed by this Docker Compose runtime. The planned
-`claude-os-full-runtime` work will add a separate documented local URL for the
-Claude-OS UI and keep it distinct from the API/MCP endpoint.
+The Claude-OS UI is intentionally separate from LibreChat and from the API/MCP
+endpoint. LibreChat remains the teacher-facing workflow surface; Claude-OS UI is
+an advanced local memory and runtime review surface.
 
 ## Long-term memory
 
@@ -62,10 +64,12 @@ available.
 Raw sources are not bulk ingested; promotion into the wiki must pass the shared
 privacy validator.
 
-Current limitation: the runtime bootstraps the project and folder hook, but the
-release does not yet prove document sync, embedding coverage, semantic search,
-hybrid search, reranking, or agentic RAG through automated status checks. Those
-items are tracked in the Claude-OS full runtime integration spec.
+The aggregated teacher-tools status reports Claude-OS API/UI reachability,
+project bootstrap, wiki KB state, folder hook state, document and chunk counts,
+recent jobs, service status, Ollama reachability, and missing local model names.
+If Ollama or the configured embedding model is unavailable, the stack can still
+start for non-RAG teacher workflows, but local-memory RAG capability is reported
+as degraded.
 
 ## Design notes
 

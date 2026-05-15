@@ -22,6 +22,25 @@ RUN git clone "${CLAUDE_OS_REPO}" claude-os \
     && git checkout "${CLAUDE_OS_COMMIT}"
 
 WORKDIR /opt/claude-os
+RUN python - <<'PY'
+from pathlib import Path
+
+patches = {
+    "mcp_server/server.py": {
+        'base_url="http://localhost:11434"': "base_url=Config.OLLAMA_HOST",
+    },
+    "app/core/rag_engine.py": {
+        'base_url="http://localhost:11434"  # Native Ollama (not Docker)': "base_url=Config.OLLAMA_HOST",
+    },
+}
+
+for filename, replacements in patches.items():
+    path = Path(filename)
+    text = path.read_text(encoding="utf-8")
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    path.write_text(text, encoding="utf-8")
+PY
 RUN python -m venv /opt/claude-os/venv \
     && /opt/claude-os/venv/bin/pip install --upgrade pip setuptools wheel \
     && /opt/claude-os/venv/bin/pip install -r requirements.txt

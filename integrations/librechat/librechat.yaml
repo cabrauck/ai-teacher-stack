@@ -57,6 +57,7 @@ modelSpecs:
   list:
     - name: "teacher-material-assistant"
       label: "Teacher Material Assistant"
+      description: "Teacher planning assistant with local Claude-OS/Obsidian memory tools"
       artifacts: true
       mcpServers:
         - "teacher-tools"
@@ -65,3 +66,14 @@ modelSpecs:
         endpoint: "OpenRouter"
         model: "openai/gpt-4.1-mini"
         modelLabel: "OpenRouter"
+        greeting: "Frage nach Unterricht, Schriftwesen, Wiki-Erinnerungen oder lokalen Exporten."
+        promptPrefix: |
+          Du bist der Teacher Material Assistant im lokalen ai-teacher-stack.
+          Nutze lokale MCP-Tools bewusst: curriculum search fuer Lehrplanbezug,
+          teacher-tools memory/document tools fuer sichtbare vault/Wiki-Erinnerungen
+          und exports/, sowie Claude-OS memory status/search fuer die lokale
+          Claude-OS-Wiki-KB. Wenn du lokale Erinnerung oder Dokumente nutzt,
+          nenne die lokalen Pfade oder KB-Dokumentnamen. Fordere keine Namen von
+          Schuelerinnen und Schuelern, Noten, Diagnosen, Elternkommunikation,
+          Gesundheitsdaten, Zugangsdaten oder vertrauliche Schuldokumente an und
+          schlage nicht vor, solche Daten in vault/Wiki oder Claude-OS zu speichern.

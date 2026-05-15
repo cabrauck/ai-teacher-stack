@@ -4,6 +4,11 @@ from typing import Annotated
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
+from teacher_tools.claude_os import (
+    inspect_claude_os_runtime,
+    search_claude_os_memory,
+    sync_claude_os_memory,
+)
 from teacher_tools.curriculum import load_curriculum_records, search_curriculum
 from teacher_tools.documents import (
     export_lesson_docx,
@@ -13,7 +18,9 @@ from teacher_tools.documents import (
 from teacher_tools.lessons import generate_lesson_plan
 from teacher_tools.memory import (
     create_source_note,
+    lint_memory_wiki,
     memory_health,
+    memory_schema_markdown,
     promote_source_to_wiki,
     read_memory_index,
     write_wiki_page,
@@ -78,6 +85,13 @@ class MemoryPromotionRequest(BaseModel):
     tags: list[str] = Field(default_factory=list)
 
 
+class ClaudeOsMemorySearchRequest(BaseModel):
+    query: str
+    use_hybrid: bool = False
+    use_rerank: bool = False
+    use_agentic: bool = False
+
+
 def _memory_error(exc: Exception) -> HTTPException:
     if isinstance(exc, PrivacyError):
         return HTTPException(status_code=400, detail=str(exc))
@@ -108,11 +122,21 @@ def stack_status():
         vault_root=settings.vault_root,
         export_root=settings.export_root,
         claude_os_url=settings.claude_os_url,
+        claude_os_frontend_url=settings.claude_os_frontend_url,
+        claude_os_redis_host=settings.claude_os_redis_host,
+        claude_os_redis_port=settings.claude_os_redis_port,
         librechat_url=settings.librechat_url,
+        ollama_url=settings.ollama_base_url,
+        ollama_model=settings.ollama_model,
+        ollama_embed_model=settings.ollama_embed_model,
+        claude_os_project_name=settings.claude_os_project_name,
+        claude_os_wiki_kb_name=settings.claude_os_wiki_kb_name,
+        claude_os_wiki_mcp_type=settings.claude_os_wiki_mcp_type,
         public_host=settings.stack_public_host,
         host_librechat_port=settings.host_librechat_port,
         host_teacher_tools_port=settings.host_teacher_tools_port,
         host_claude_os_port=settings.host_claude_os_port,
+        host_claude_os_frontend_port=settings.host_claude_os_frontend_port,
     )
 
 
@@ -194,6 +218,16 @@ def memory_status():
     return memory_health(settings.vault_root)
 
 
+@app.get("/memory/wiki/schema")
+def memory_wiki_schema():
+    return {"markdown": memory_schema_markdown()}
+
+
+@app.get("/memory/wiki/lint")
+def memory_wiki_lint():
+    return lint_memory_wiki(settings.vault_root)
+
+
 @app.post("/memory/sources")
 def memory_source(request: MemorySourceRequest):
     try:
@@ -251,3 +285,37 @@ def memory_promote(request: MemoryPromotionRequest):
     response = _memory_write_response(result.wiki)
     response["source_path"] = result.source_path
     return response
+
+
+@app.get("/claude-os/memory/status")
+def claude_os_memory_status():
+    return inspect_claude_os_runtime(
+        settings.claude_os_url,
+        project_name=settings.claude_os_project_name,
+        wiki_kb_name=settings.claude_os_wiki_kb_name,
+        wiki_mcp_type=settings.claude_os_wiki_mcp_type,
+    )
+
+
+@app.post("/claude-os/memory/sync")
+def claude_os_memory_sync():
+    return sync_claude_os_memory(
+        settings.claude_os_url,
+        project_name=settings.claude_os_project_name,
+        wiki_mcp_type=settings.claude_os_wiki_mcp_type,
+    )
+
+
+@app.post("/claude-os/memory/search")
+def claude_os_memory_search(request: ClaudeOsMemorySearchRequest):
+    try:
+        return search_claude_os_memory(
+            settings.claude_os_url,
+            wiki_kb_name=settings.claude_os_wiki_kb_name,
+            query=request.query,
+            use_hybrid=request.use_hybrid,
+            use_rerank=request.use_rerank,
+            use_agentic=request.use_agentic,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc

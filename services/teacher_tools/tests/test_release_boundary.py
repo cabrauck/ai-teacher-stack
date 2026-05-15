@@ -46,6 +46,8 @@ def test_release_package_contains_schriftwesen_runtime_templates_and_skeletons(t
     assert "ai-teacher-stack/integrations/claude-os/bootstrap_vault.py" in members
     assert "ai-teacher-stack/integrations/claude-os/Dockerfile" in members
     assert "ai-teacher-stack/integrations/claude-os/entrypoint.sh" in members
+    assert "ai-teacher-stack/integrations/claude-os/frontend.Dockerfile" in members
+    assert "ai-teacher-stack/integrations/claude-os/frontend-entrypoint.sh" in members
     assert "ai-teacher-stack/integrations/librechat/librechat.yaml" in members
     assert "ai-teacher-stack/scripts/start-pre-release.ps1" in members
     assert "ai-teacher-stack/scripts/start-pre-release.sh" in members
@@ -54,6 +56,8 @@ def test_release_package_contains_schriftwesen_runtime_templates_and_skeletons(t
     assert "ai-teacher-stack/scripts/stop-pre-release.ps1" in members
     assert "ai-teacher-stack/scripts/stop-pre-release.sh" in members
     assert "ai-teacher-stack/docs/pre-release-guide.md" in members
+    assert "ai-teacher-stack/docs/teacher-memory-wiki.md" in members
+    assert "ai-teacher-stack/services/teacher_tools/src/teacher_tools/claude_os.py" in members
     assert "ai-teacher-stack/services/teacher_tools/src/teacher_tools/stack_status.py" in members
     assert "ai-teacher-stack/services/teacher_tools/src/teacher_tools/mcp_server.py" in members
     assert (

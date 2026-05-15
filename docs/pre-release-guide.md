@@ -17,6 +17,7 @@ The intended shape is:
 - Start, stop, and readiness scripts for Windows and shell-based platforms
 - Local Docker Compose runtime
 - LibreChat teacher frontend at `http://localhost:3080`
+- Claude-OS UI at `http://localhost:5173`
 - Claude-OS API/MCP runtime with local state under `.claude-os/`
 - teacher-tools MCP integration for LibreChat
 - Curriculum search
@@ -27,16 +28,21 @@ The intended shape is:
 
 ## What Claude-OS Exposes Today
 
+Use the Claude-OS UI at `http://localhost:5173` for:
+
+- project dashboard
+- MCP and KB review
+- service and job status
+- RAG mode controls and manual checks
+
 Use the Claude-OS API/MCP service at `http://localhost:8051` for:
 
 - `http://localhost:8051/health` for runtime health
 - `http://localhost:8051/docs` for technical API documentation
 - MCP access from LibreChat and other configured local clients
 
-The root URL `http://localhost:8051/` is not a web app in the current
-pre-release; it may return `405 Method Not Allowed`. The upstream Claude-OS UI
-is planned as a separate runtime service in the Claude-OS full runtime
-integration milestone.
+The root URL `http://localhost:8051/` is not the web app; it may return
+`405 Method Not Allowed`. Use `http://localhost:5173` for the UI.
 
 ## What LibreChat Is For
 
@@ -47,6 +53,8 @@ Use LibreChat for:
 - using teacher-tools and Claude-OS through MCP
 - listing and reading local `vault/Wiki/` memories through teacher-tools MCP
 - listing generated local documents under `exports/`
+- showing Claude-OS memory status, KB document counts, sync results, and local
+  search results through teacher-tools MCP
 - exporting reviewed material to local files
 - working with OpenRouter or locally configured BYOK providers
 
@@ -82,8 +90,10 @@ If the start script fails:
   `.ps1` files in file properties or run them once with
   `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\start-pre-release.ps1`
 - note that the start script can move default host ports `3080`, `8010`, and
-  `8051` to the next free local ports and stores the chosen values in `.env`
+  `8051`, and `5173` to the next free local ports and stores the chosen values
+  in `.env`
 - open `http://localhost:3080`
+- open `http://localhost:5173`
 - open `http://localhost:8010/status`
 - open `http://localhost:8051/health`
 - open `http://localhost:8051/docs` for the technical Claude-OS API surface

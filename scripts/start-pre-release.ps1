@@ -133,6 +133,16 @@ function Invoke-Json {
     return Invoke-RestMethod -Uri $Url -Method Get -TimeoutSec 3
 }
 
+function Test-HttpReachable {
+    param([string]$Url)
+    try {
+        $response = Invoke-WebRequest -Uri $Url -Method Get -TimeoutSec 3 -UseBasicParsing
+        return [int]$response.StatusCode -ge 200 -and [int]$response.StatusCode -lt 400
+    } catch {
+        return $false
+    }
+}
+
 function Sync-EnvExample {
     $existingKeys = @{}
     if (Test-Path ".env") {
@@ -164,7 +174,8 @@ function Sync-PublicUrls {
         [string]$PublicHost,
         [int]$LibreChatPort,
         [int]$TeacherToolsPort,
-        [int]$ClaudeOsPort
+        [int]$ClaudeOsPort,
+        [int]$ClaudeOsFrontendPort
     )
 
     $libreChatUrl = "http://${PublicHost}:${LibreChatPort}"
@@ -174,9 +185,11 @@ function Sync-PublicUrls {
     $managedOrigins = @(
         "http://${PublicHost}:${LibreChatPort}",
         "http://${PublicHost}:${ClaudeOsPort}",
+        "http://${PublicHost}:${ClaudeOsFrontendPort}",
         "http://${PublicHost}:${TeacherToolsPort}",
         "http://127.0.0.1:${LibreChatPort}",
         "http://127.0.0.1:${ClaudeOsPort}",
+        "http://127.0.0.1:${ClaudeOsFrontendPort}",
         "http://127.0.0.1:${TeacherToolsPort}"
     )
     $existingOrigins = (Get-EnvValue -Key "ALLOWED_ORIGINS").Split(",") |
@@ -219,6 +232,13 @@ function Resolve-HostPorts {
             Default = 8051
             Service = "claude-os"
             ContainerPort = 8051
+        },
+        @{
+            Key = "HOST_CLAUDE_OS_FRONTEND_PORT"
+            Label = "Claude-OS UI"
+            Default = 5173
+            Service = "claude-os-frontend"
+            ContainerPort = 5173
         }
     )
     $selectedPorts = @{}
@@ -251,13 +271,15 @@ function Resolve-HostPorts {
         -PublicHost $publicHost `
         -LibreChatPort $selectedPorts["HOST_LIBRECHAT_PORT"] `
         -TeacherToolsPort $selectedPorts["HOST_TEACHER_TOOLS_PORT"] `
-        -ClaudeOsPort $selectedPorts["HOST_CLAUDE_OS_PORT"]
+        -ClaudeOsPort $selectedPorts["HOST_CLAUDE_OS_PORT"] `
+        -ClaudeOsFrontendPort $selectedPorts["HOST_CLAUDE_OS_FRONTEND_PORT"]
 
     return @{
         PublicHost = $publicHost
         LibreChatPort = $selectedPorts["HOST_LIBRECHAT_PORT"]
         TeacherToolsPort = $selectedPorts["HOST_TEACHER_TOOLS_PORT"]
         ClaudeOsPort = $selectedPorts["HOST_CLAUDE_OS_PORT"]
+        ClaudeOsFrontendPort = $selectedPorts["HOST_CLAUDE_OS_FRONTEND_PORT"]
     }
 }
 
@@ -285,28 +307,33 @@ $teacherToolsApiUrl = "http://$($runtimeConfig.PublicHost):$($runtimeConfig.Teac
 $statusUrl = "${teacherToolsApiUrl}/status"
 $claudeOsUrl = "http://$($runtimeConfig.PublicHost):$($runtimeConfig.ClaudeOsPort)"
 $claudeHealthUrl = "${claudeOsUrl}/health"
+$claudeOsUiUrl = "http://$($runtimeConfig.PublicHost):$($runtimeConfig.ClaudeOsFrontendPort)"
 
 Write-Step "Starting Docker Compose stack"
 docker compose up --build -d | Out-Host
 
-Write-Step "Waiting for LibreChat, teacher-tools, Claude-OS, and Redis readiness"
+Write-Step "Waiting for LibreChat, teacher-tools, Claude-OS API/UI, and Redis readiness"
 $deadline = (Get-Date).AddMinutes(2)
 do {
     Start-Sleep -Seconds 3
     try {
         $status = Invoke-Json -Url $statusUrl
         $claudeHealth = Invoke-Json -Url $claudeHealthUrl
+        $claudeOsUiReady = Test-HttpReachable -Url $claudeOsUiUrl
         $runningServices = docker compose ps --status running --services
         $redisReady = $runningServices -contains "claude-os-redis"
         $libreChatReady = $runningServices -contains "librechat"
         $claudeOsReady = $runningServices -contains "claude-os"
+        $claudeOsFrontendReady = $runningServices -contains "claude-os-frontend"
         $teacherToolsReady = $runningServices -contains "teacher-tools"
         if (
             $status.ready -and
             @("ok", "degraded") -contains $claudeHealth.status -and
+            $claudeOsUiReady -and
             $redisReady -and
             $libreChatReady -and
             $claudeOsReady -and
+            $claudeOsFrontendReady -and
             $teacherToolsReady
         ) {
             break
@@ -318,15 +345,18 @@ do {
 
 $finalStatus = Invoke-Json -Url $statusUrl
 $finalClaude = Invoke-Json -Url $claudeHealthUrl
+$finalClaudeOsUiReady = Test-HttpReachable -Url $claudeOsUiUrl
 $finalServices = docker compose ps --status running --services
 
 if (
     -not (
         $finalStatus.ready -and
         @("ok", "degraded") -contains $finalClaude.status -and
+        $finalClaudeOsUiReady -and
         ($finalServices -contains "claude-os-redis") -and
         ($finalServices -contains "librechat") -and
         ($finalServices -contains "claude-os") -and
+        ($finalServices -contains "claude-os-frontend") -and
         ($finalServices -contains "teacher-tools")
     )
 ) {
@@ -336,7 +366,8 @@ if (
 Write-Host ""
 Write-Step "Pre-release is ready"
 Write-Host "LibreChat teacher frontend: $libreChatUrl"
-Write-Host "Claude-OS memory runtime:    $claudeOsUrl"
+Write-Host "Claude-OS UI:                $claudeOsUiUrl"
+Write-Host "Claude-OS API/MCP:           $claudeOsUrl"
 Write-Host "teacher-tools API:           $teacherToolsApiUrl"
 Write-Host "Stack status:                $statusUrl"
 Write-Host ""

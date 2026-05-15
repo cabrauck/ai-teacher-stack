@@ -5,11 +5,18 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP
 
+from teacher_tools.claude_os import (
+    inspect_claude_os_runtime,
+    search_claude_os_memory,
+    sync_claude_os_memory,
+)
 from teacher_tools.curriculum import load_curriculum_records, search_curriculum
 from teacher_tools.documents import export_lesson_docx, lesson_to_markdown
 from teacher_tools.lessons import generate_lesson_plan
 from teacher_tools.memory import (
     create_source_note,
+    lint_memory_wiki,
+    memory_schema_markdown,
     promote_source_to_wiki,
     read_memory_index,
     write_wiki_page,
@@ -206,6 +213,14 @@ def read_memory_wiki_page(path: str) -> dict[str, str]:
     }
 
 
+def get_memory_wiki_schema() -> dict[str, str]:
+    return {"markdown": memory_schema_markdown()}
+
+
+def lint_memory_wiki_pages() -> dict[str, Any]:
+    return lint_memory_wiki(settings.vault_root)
+
+
 def list_exported_documents() -> dict[str, Any]:
     export_root = settings.export_root
     suffix_labels = {
@@ -236,16 +251,59 @@ def list_exported_documents() -> dict[str, Any]:
     }
 
 
+def get_claude_os_memory_status() -> dict[str, Any]:
+    return inspect_claude_os_runtime(
+        settings.claude_os_url,
+        project_name=settings.claude_os_project_name,
+        wiki_kb_name=settings.claude_os_wiki_kb_name,
+        wiki_mcp_type=settings.claude_os_wiki_mcp_type,
+    )
+
+
+def sync_claude_os_wiki_memory() -> dict[str, Any]:
+    return sync_claude_os_memory(
+        settings.claude_os_url,
+        project_name=settings.claude_os_project_name,
+        wiki_mcp_type=settings.claude_os_wiki_mcp_type,
+    )
+
+
+def search_claude_os_wiki_memory(
+    query: str,
+    use_hybrid: bool = False,
+    use_rerank: bool = False,
+    use_agentic: bool = False,
+) -> dict[str, Any]:
+    return search_claude_os_memory(
+        settings.claude_os_url,
+        wiki_kb_name=settings.claude_os_wiki_kb_name,
+        query=query,
+        use_hybrid=use_hybrid,
+        use_rerank=use_rerank,
+        use_agentic=use_agentic,
+    )
+
+
 def get_stack_status() -> dict[str, Any]:
     return build_stack_status(
         vault_root=settings.vault_root,
         export_root=settings.export_root,
         claude_os_url=settings.claude_os_url,
+        claude_os_frontend_url=settings.claude_os_frontend_url,
+        claude_os_redis_host=settings.claude_os_redis_host,
+        claude_os_redis_port=settings.claude_os_redis_port,
         librechat_url=settings.librechat_url,
+        ollama_url=settings.ollama_base_url,
+        ollama_model=settings.ollama_model,
+        ollama_embed_model=settings.ollama_embed_model,
+        claude_os_project_name=settings.claude_os_project_name,
+        claude_os_wiki_kb_name=settings.claude_os_wiki_kb_name,
+        claude_os_wiki_mcp_type=settings.claude_os_wiki_mcp_type,
         public_host=settings.stack_public_host,
         host_librechat_port=settings.host_librechat_port,
         host_teacher_tools_port=settings.host_teacher_tools_port,
         host_claude_os_port=settings.host_claude_os_port,
+        host_claude_os_frontend_port=settings.host_claude_os_frontend_port,
     )
 
 
@@ -268,7 +326,9 @@ def create_mcp_server() -> FastMCP:
         instructions=(
             "Tools for privacy-conscious teacher planning. Do not request or store "
             "student names, grades, diagnoses, parent communication, health data, "
-            "credentials, or confidential school documents."
+            "credentials, or confidential school documents. Long-term memory tools "
+            "read only privacy-checked vault/Wiki pages and Claude-OS wiki KB state; "
+            "cite local wiki paths or exported document paths when using them."
         ),
     )
 
@@ -281,7 +341,12 @@ def create_mcp_server() -> FastMCP:
     mcp.tool()(promote_memory_source_note)
     mcp.tool()(list_memory_wiki_pages)
     mcp.tool()(read_memory_wiki_page)
+    mcp.tool()(get_memory_wiki_schema)
+    mcp.tool()(lint_memory_wiki_pages)
     mcp.tool()(list_exported_documents)
+    mcp.tool()(get_claude_os_memory_status)
+    mcp.tool()(sync_claude_os_wiki_memory)
+    mcp.tool()(search_claude_os_wiki_memory)
     mcp.tool()(get_stack_status)
     mcp.resource("teacher://memory/wiki/index")(get_memory_wiki_index)
     mcp.resource("teacher://curriculum/records")(get_curriculum_records)

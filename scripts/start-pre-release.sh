@@ -140,6 +140,7 @@ sync_public_urls() {
   local librechat_port="$2"
   local teacher_tools_port="$3"
   local claude_os_port="$4"
+  local claude_os_frontend_port="$5"
 
   local librechat_url="http://${public_host}:${librechat_port}"
   set_env_value "DOMAIN_CLIENT" "${librechat_url}"
@@ -157,9 +158,11 @@ sync_public_urls() {
     printf '%s\n' \
       "http://${public_host}:${librechat_port}" \
       "http://${public_host}:${claude_os_port}" \
+      "http://${public_host}:${claude_os_frontend_port}" \
       "http://${public_host}:${teacher_tools_port}" \
       "http://127.0.0.1:${librechat_port}" \
       "http://127.0.0.1:${claude_os_port}" \
+      "http://127.0.0.1:${claude_os_frontend_port}" \
       "http://127.0.0.1:${teacher_tools_port}"
   )"
   allowed_origins="$(
@@ -248,7 +251,23 @@ resolve_host_ports() {
   fi
   set_env_value "HOST_CLAUDE_OS_PORT" "${claude_os_port}"
 
-  sync_public_urls "${public_host}" "${librechat_port}" "${teacher_tools_port}" "${claude_os_port}"
+  local claude_os_frontend_requested_port claude_os_frontend_published_port
+  claude_os_frontend_requested_port="$(get_env_port "HOST_CLAUDE_OS_FRONTEND_PORT" "5173")"
+  if printf '%s\n' "${running_services}" | grep -qx 'claude-os-frontend' \
+    && claude_os_frontend_published_port="$(get_compose_published_port "claude-os-frontend" "5173")"; then
+    claude_os_frontend_port="${claude_os_frontend_published_port}"
+    if [[ "${claude_os_frontend_port}" != "${claude_os_frontend_requested_port}" ]]; then
+      log "Claude-OS UI is already running on host port ${claude_os_frontend_port}; updating .env to match."
+    fi
+  else
+    claude_os_frontend_port="$(select_free_port "${claude_os_frontend_requested_port}" "${librechat_port}" "${teacher_tools_port}" "${claude_os_port}")"
+    if [[ "${claude_os_frontend_port}" != "${claude_os_frontend_requested_port}" ]]; then
+      log "Claude-OS UI host port ${claude_os_frontend_requested_port} is already in use; using ${claude_os_frontend_port} instead."
+    fi
+  fi
+  set_env_value "HOST_CLAUDE_OS_FRONTEND_PORT" "${claude_os_frontend_port}"
+
+  sync_public_urls "${public_host}" "${librechat_port}" "${teacher_tools_port}" "${claude_os_port}" "${claude_os_frontend_port}"
 }
 
 cd "${REPO_ROOT}"
@@ -274,19 +293,22 @@ teacher_tools_api_url="http://${public_host}:${teacher_tools_port}"
 teacher_tools_status_url="${teacher_tools_api_url}/status"
 claude_os_url="http://${public_host}:${claude_os_port}"
 claude_os_health_url="${claude_os_url}/health"
+claude_os_frontend_url="http://${public_host}:${claude_os_frontend_port}"
 
 log "Starting Docker Compose stack"
 docker compose up --build -d
 
-log "Waiting for LibreChat, teacher-tools, Claude-OS, and Redis readiness"
+log "Waiting for LibreChat, teacher-tools, Claude-OS API/UI, and Redis readiness"
 deadline=$((SECONDS + 120))
 while (( SECONDS < deadline )); do
   if status_json="$(curl -fsS "${teacher_tools_status_url}" 2>/dev/null)" \
     && claude_health_json="$(curl -fsS "${claude_os_health_url}" 2>/dev/null)" \
+    && curl -fsS "${claude_os_frontend_url}" >/dev/null 2>&1 \
     && echo "${status_json}" | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true' \
     && docker compose ps --status running --services | grep -qx 'claude-os-redis' \
     && docker compose ps --status running --services | grep -qx 'librechat' \
     && docker compose ps --status running --services | grep -qx 'claude-os' \
+    && docker compose ps --status running --services | grep -qx 'claude-os-frontend' \
     && docker compose ps --status running --services | grep -qx 'teacher-tools' \
     && echo "${claude_health_json}" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"(ok|degraded)"'; then
     break
@@ -299,14 +321,17 @@ claude_health_json="$(curl -fsS "${claude_os_health_url}")"
 docker compose ps --status running --services | grep -qx 'claude-os-redis'
 docker compose ps --status running --services | grep -qx 'librechat'
 docker compose ps --status running --services | grep -qx 'claude-os'
+docker compose ps --status running --services | grep -qx 'claude-os-frontend'
 docker compose ps --status running --services | grep -qx 'teacher-tools'
 echo "${status_json}" | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true'
 echo "${claude_health_json}" | grep -Eq '"status"[[:space:]]*:[[:space:]]*"(ok|degraded)"'
+curl -fsS "${claude_os_frontend_url}" >/dev/null
 
 printf '\n'
 log "Pre-release is ready"
 printf 'LibreChat teacher frontend: %s\n' "${librechat_url}"
-printf 'Claude-OS memory runtime:    %s\n' "${claude_os_url}"
+printf 'Claude-OS UI:                %s\n' "${claude_os_frontend_url}"
+printf 'Claude-OS API/MCP:           %s\n' "${claude_os_url}"
 printf 'teacher-tools API:           %s\n' "${teacher_tools_api_url}"
 printf 'Stack status:                %s\n\n' "${teacher_tools_status_url}"
 printf 'Open LibreChat and configure OpenRouter or BYOK provider keys in your local .env.\n'

@@ -52,6 +52,25 @@ def test_write_wiki_page_updates_index_and_log(tmp_path: Path):
     assert "wiki_write" in log
 
 
+def test_memory_metadata_cannot_override_controlled_frontmatter(tmp_path: Path):
+    result = write_wiki_page(
+        tmp_path,
+        title="Kartenarbeit",
+        body="Bewaehrte Struktur fuer Kartenstunden.",
+        metadata={
+            "type": "unsafe",
+            "privacy_status": "unchecked",
+            "source": "../outside.md",
+        },
+    )
+
+    markdown = result.path.read_text(encoding="utf-8")
+
+    assert "type: memory_wiki" in markdown
+    assert "privacy_status: no_personal_data_detected" in markdown
+    assert "source: ../outside.md" not in markdown
+
+
 def test_promote_source_to_wiki_blocks_personal_frontmatter(tmp_path: Path):
     source_dir = tmp_path / "Sources"
     source_dir.mkdir(parents=True)
